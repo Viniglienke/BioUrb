@@ -1,0 +1,12 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin:  auto;
+  flex-wrap: wrap;
+  background-color: #ECF5DF;
+}
+
+.min-height {
+  min-height: 50%;
+}

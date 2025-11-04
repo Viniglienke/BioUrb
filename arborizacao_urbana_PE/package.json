@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "leaflet": "^1.9.4",
+    "react-js-pagination": "^3.0.2",
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^6.24.1"
+  }
+}

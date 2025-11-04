@@ -1,0 +1,105 @@
+.container {
+  width: 600px;
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  padding: 100px;
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  background-color: #b2dafa;
+
+}
+
+.container h1 {
+  text-align: center;
+  font-size: 30px;
+  color: #3A6604;
+  margin-bottom: 30px;
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-field input {
+  width: 92%;
+  height: 40px;
+  background: transparent;
+  outline: none;
+  border: 1px solid rgb(0, 0, 0);
+  border-radius: 6px;
+  font-size: 16px;
+  color: #fff;
+  padding: 20px 45px 20px 25px;
+}
+
+.input-field input::placeholder {
+  color: #3A6604;
+}
+
+.input-field .icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #177214;
+  font-size: 20px;
+}
+
+.recall-forget {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14.5px;
+  margin-bottom: 20px;
+}
+
+.recall-forget label {
+  color: #fff;
+}
+
+.recall-forget a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.recall-forget a:hover {
+  text-decoration: underline;
+}
+
+button[type="submit"] {
+  width: 104%;
+  height: 45px;
+  background: #fff;
+  border: none;
+  outline: none;
+  border-radius: 40px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  font-weight: 700;
+  text-shadow: none;
+  margin-top: 20px;
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-link p a {
+  color: #3A6604;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signup-link p a:hover {
+  text-decoration: underline;
+}
+
+.cpf-error {
+  border: 2px solid red !important;
+  background-color: #ffe6e6;
+}
