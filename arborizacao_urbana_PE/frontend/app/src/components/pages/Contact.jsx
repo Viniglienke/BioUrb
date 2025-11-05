@@ -1,100 +1,126 @@
 import { useState } from 'react';
+import { FaPhone, FaEnvelope, FaMapMarkerAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import './Contact.css';
 import emailjs from '@emailjs/browser';
 
 const Contact = () => {
-  // Estados para armazenar os valores do formulário
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Função executada ao enviar o formulário
   const sendEmail = (e) => {
-    e.preventDefault(); // Evita o comportamento padrão de recarregar a página
-    
-    // Verificação simples: todos os campos devem estar preenchidos
+    e.preventDefault();
+
     if(name === '' || email === '' || message === ''){
-      alert("Preencha todos os campos!");
+      toast.error("Preencha todos os campos!");
       return;
     }
 
-    // Parâmetros que serão passados ao template do EmailJS
+    setIsSubmitting(true);
+
     const templateParams = {
       from_name: name,
       message: message,
       email: email
     }
 
-    // Envia o email utilizando os parâmetros e identificadores do serviço e template
     emailjs.send("service_vk5hd8d", "template_c3yyd5r", templateParams, "0EZ5fZfY7LfCvIBry")
     .then((response) => {
       console.log("EMAIL ENVIADO", response.status, response.text)
-      alert("Mensagem enviada!")
+      toast.success("Mensagem enviada com sucesso!")
 
-      // Limpa os campos do formulário após o envio bem-sucedido
       setName('')
       setEmail('')
       setMessage('')
-
     }, (err) => {
       console.log("ERRO: ", err)
+      toast.error("Erro ao enviar mensagem. Tente novamente.");
     })
-
+    .finally(() => {
+      setIsSubmitting(false);
+    });
   };
 
-// JSX retornado pelo componente
   return (
     <div className="contact-container">
       <header className="contact-header">
-        <h1>Entre em Contato Conosco</h1>
-        <p>Entre em contato para obter mais informações sobre nosso sistema.</p>
+        <h1>Entre em Contato</h1>
+        <p>Estamos aqui para ajudar. Entre em contato conosco para mais informações sobre o BioUrb.</p>
       </header>
-      <section>
+
+      <section className="contact-info-section">
         <h2>Informações de Contato</h2>
-        <p>Telefone: (49) 3664-0244</p>
-        <p>Email: contato@biourb.com</p>
-        <p>Endereço: Av. Araucária, 1234 - Maravilha, Santa Catarina</p>
+        <div className="contact-info-grid">
+          <div className="contact-info-item">
+            <FaPhone className="contact-info-icon" />
+            <div className="contact-info-text">
+              <div className="contact-info-label">Telefone</div>
+              <div className="contact-info-value">(49) 3664-0244</div>
+            </div>
+          </div>
+          <div className="contact-info-item">
+            <FaEnvelope className="contact-info-icon" />
+            <div className="contact-info-text">
+              <div className="contact-info-label">Email</div>
+              <div className="contact-info-value">contato@biourb.com</div>
+            </div>
+          </div>
+          <div className="contact-info-item">
+            <FaMapMarkerAlt className="contact-info-icon" />
+            <div className="contact-info-text">
+              <div className="contact-info-label">Endereço</div>
+              <div className="contact-info-value">Av. Araucária, 1234 - Maravilha, SC</div>
+            </div>
+          </div>
+        </div>
       </section>
-      <section>
-        <h2>Formulário de Contato</h2>
+
+      <section className="contact-form-section">
+        <h2>Envie sua Mensagem</h2>
         <form onSubmit={sendEmail}>
           <div className="input-field">
-            <label htmlFor="name">Nome:</label>
+            <label htmlFor="name">Nome</label>
             <input
               type="text"
               id="name"
               name="name"
+              placeholder="Seu nome completo"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div className="input-field">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
               name="email"
+              placeholder="seu@email.com"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="input-field">
-            <label htmlFor="message">Mensagem:</label>
+            <label htmlFor="message">Mensagem</label>
             <textarea
               id="message"
               name="message"
-              rows="4"
+              placeholder="Como podemos ajudar?"
               required
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             ></textarea>
           </div>
-          <button type="submit">Enviar Mensagem</button>
+          <button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
+          </button>
         </form>
       </section>
-      </div>
+    </div>
   );
 };
 

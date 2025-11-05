@@ -8,6 +8,7 @@ import Trees from '../components/pages/Trees';
 import Monitoring from '../components/pages/Monitoring';
 import Contact from '../components/pages/Contact';
 import Register from '../components/pages/Register';
+import Areas from '../components/pages/Areas';
 import { PrivateRoute } from "./PrivateRoutes";
 
 export const AppRouter = () => {
@@ -22,6 +23,9 @@ export const AppRouter = () => {
                     <Route path="/home" element={<Home />} />
                     <Route path="/trees" element={<PrivateRoute />}>
                     <Route path="/trees" element={<Trees />} />
+                    </Route>
+                    <Route path="/areas" element={<PrivateRoute />}>
+                    <Route path="/areas" element={<Areas />} />
                     </Route>
                     <Route path="/monitoring" element={<PrivateRoute />}>
                     <Route path="/monitoring" element={<Monitoring />} />

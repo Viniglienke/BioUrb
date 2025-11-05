@@ -1,36 +1,31 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Axios from "axios";
-import { FaUser, FaTree, FaCalendarAlt, FaHeartbeat, FaMapMarkerAlt } from "react-icons/fa";
+import { FaUser, FaTree, FaCalendarAlt, FaHeartbeat, FaMapMarkerAlt, FaLeaf, FaRulerVertical, FaCircle } from "react-icons/fa";
 import { format, isAfter, parseISO, isValid } from "date-fns";
+import { toast } from 'react-toastify';
 import './Trees.css';
 
 const Trees = () => {
-    // Estado que armazena os valores do formulário
     const [values, setValues] = useState({
         usuName: "",
         treeName: "",
+        popularName: "",
         plantingDate: "",
         lifecondition: "",
-        location: ""
+        location: "",
+        altura: "",
+        diametro: "",
+        areaVerdeId: ""
     });
 
-    // Controle da exibição do popup de sucesso
     const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-
-    // Hook para redirecionamento de rotas
+    const [areas, setAreas] = useState([]);
     const navigate = useNavigate();
-
-    // Estado que armazena o ID do usuário logado
     const [usuarioId, setUsuarioId] = useState(null);
-
-    // Referência ao campo de localização (textarea)
     const locationRef = useRef(null);
-
-    // Controla o tipo do input da data (para mudar de "text" para "date" ao focar)
     const [dateInputType, setDateInputType] = useState("text");
 
-    // Recupera os dados do usuário autenticado do localStorage ao montar o componente
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("@Auth:user"));
         if (user) {
@@ -40,9 +35,19 @@ const Trees = () => {
             }));
             setUsuarioId(user.id);
         }
+
+        fetchAreas();
     }, []);
 
-    // Ajusta a altura do textarea conforme o texto digitado
+    const fetchAreas = async () => {
+        try {
+            const response = await Axios.get(`${process.env.REACT_APP_API_URL}/areas`);
+            setAreas(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar áreas:", error);
+        }
+    };
+
     const adjustTextareaHeight = () => {
         const el = locationRef.current;
         if (el) {
@@ -51,37 +56,31 @@ const Trees = () => {
         }
     };
 
-    // Executa o ajuste da altura do textarea ao carregar o componente
     useEffect(() => {
         adjustTextareaHeight();
     }, []);
 
-    // Atualiza o estado com os valores digitados nos campos
     const handleChange = (e) => {
         setValues((prevValues) => ({
             ...prevValues,
             [e.target.name]: e.target.value
         }));
 
-        // Se for o campo localização, ajusta a altura
         if (e.target.name === "location") {
             adjustTextareaHeight();
         }
     };
 
-    // Muda o input da data para "date" ao focar
     const handleFocusDate = () => {
         setDateInputType("date");
     };
 
-    // Volta o input para "text" se o campo estiver vazio ao perder o foco
     const handleBlurDate = () => {
         if (!values.plantingDate) {
             setDateInputType("text");
         }
     };
 
-    // Função executada ao enviar o formulário
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -89,109 +88,173 @@ const Trees = () => {
             const dataSelecionada = parseISO(values.plantingDate);
             const hoje = new Date();
 
-            // Verifica se a data é válida e se não está no futuro
             if (!isValid(dataSelecionada)) {
-                alert("Por favor, insira uma data de plantio válida no formato DD-MM-AAAA.");
+                toast.error("Por favor, insira uma data de plantio válida.");
                 return;
             }
             if (isAfter(dataSelecionada, hoje)) {
-                alert("A data de plantio não pode ser no futuro.");
+                toast.error("A data de plantio não pode ser no futuro.");
                 return;
             }
 
-            // Envia os dados para a API
             Axios.post(`${process.env.REACT_APP_API_URL}/trees`, {
                 usuName: values.usuName,
                 treeName: values.treeName,
+                popularName: values.popularName,
                 plantingDate: format(dataSelecionada, "yyyy-MM-dd"),
                 lifecondition: values.lifecondition,
                 location: values.location,
+                altura: values.altura ? parseFloat(values.altura) : null,
+                diametro: values.diametro ? parseFloat(values.diametro) : null,
+                areaVerdeId: values.areaVerdeId || null,
                 usuario_id: usuarioId
             })
-                .then(() => setShowSuccessPopup(true))
+                .then(() => {
+                    setShowSuccessPopup(true);
+                    toast.success("Árvore cadastrada com sucesso!");
+                })
                 .catch((error) => {
                     console.error("Erro ao registrar árvore:", error);
-                    alert("Erro ao registrar árvore. Verifique o console para mais detalhes.");
+                    toast.error("Erro ao registrar árvore. Verifique os dados.");
                 });
         } catch (error) {
-            alert("Erro inesperado ao processar a data.");
+            toast.error("Erro inesperado ao processar a data.");
             console.error("Erro no try-catch do handleSubmit:", error);
         }
     };
 
-    // Fecha o popup de sucesso e redireciona para a tela de monitoramento
     const handleClosePopup = () => {
         setShowSuccessPopup(false);
         navigate("/monitoring");
     };
 
-    // Define o valor máximo permitido para o campo de data (hoje)
     const maxDate = new Date().toISOString().split("T")[0];
 
-    // Retorno visual (JSX)
     return (
         <>
             <div className="container">
                 <form onSubmit={handleSubmit}>
                     <h1>Registrar Árvore</h1>
 
-                    <div className="input-field">
-                        <FaUser className="input-icon" />
-                        <input
-                            type="text"
-                            placeholder="Nome do Registrante"
-                            required
-                            id="usuName"
-                            name="usuName"
-                            value={values.usuName}
-                            onChange={handleChange}
-                            readOnly
-                        />
+                    <div className="form-grid">
+                        <div className="input-field">
+                            <FaUser className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Nome do Registrante"
+                                required
+                                id="usuName"
+                                name="usuName"
+                                value={values.usuName}
+                                onChange={handleChange}
+                                readOnly
+                            />
+                        </div>
+
+                        <div className="input-field">
+                            <FaLeaf className="input-icon" />
+                            <select
+                                required
+                                id="areaVerdeId"
+                                name="areaVerdeId"
+                                value={values.areaVerdeId}
+                                onChange={handleChange}
+                            >
+                                <option value="">Área Verde (Opcional)</option>
+                                {areas.map(area => (
+                                    <option key={area.id} value={area.id}>{area.nome}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="input-field">
-                        <FaTree className="input-icon" />
-                        <input
-                            type="text"
-                            placeholder="Nome Científico da Árvore"
-                            required
-                            id="treeName"
-                            name="treeName"
-                            value={values.treeName}
-                            onChange={handleChange}
-                        />
+                    <div className="form-grid">
+                        <div className="input-field">
+                            <FaTree className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Nome Científico da Árvore"
+                                required
+                                id="treeName"
+                                name="treeName"
+                                value={values.treeName}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="input-field">
+                            <FaTree className="input-icon" />
+                            <input
+                                type="text"
+                                placeholder="Nome Popular da Árvore"
+                                id="popularName"
+                                name="popularName"
+                                value={values.popularName}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
 
-                    <div className="input-field">
-                        <FaCalendarAlt className="input-icon" />
-                        <input
-                            type={dateInputType}
-                            placeholder="Data de Plantio"
-                            required
-                            id="plantingDate"
-                            name="plantingDate"
-                            value={values.plantingDate}
-                            onChange={handleChange}
-                            max={maxDate}
-                            onFocus={handleFocusDate}
-                            onBlur={handleBlurDate}
-                        />
+                    <div className="form-grid">
+                        <div className="input-field">
+                            <FaCalendarAlt className="input-icon" />
+                            <input
+                                type={dateInputType}
+                                placeholder="Data de Plantio"
+                                required
+                                id="plantingDate"
+                                name="plantingDate"
+                                value={values.plantingDate}
+                                onChange={handleChange}
+                                max={maxDate}
+                                onFocus={handleFocusDate}
+                                onBlur={handleBlurDate}
+                            />
+                        </div>
+
+                        <div className="input-field">
+                            <FaHeartbeat className="input-icon" />
+                            <select
+                                required
+                                id="lifecondition"
+                                name="lifecondition"
+                                value={values.lifecondition}
+                                onChange={handleChange}
+                            >
+                                <option value="" disabled>Saúde da Árvore</option>
+                                <option value="Saudável">Saudável</option>
+                                <option value="Doente">Doente</option>
+                                <option value="Morrendo">Morrendo</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div className="input-field">
-                        <FaHeartbeat className="input-icon" />
-                        <select
-                            required
-                            id="lifecondition"
-                            name="lifecondition"
-                            value={values.lifecondition}
-                            onChange={handleChange}
-                        >
-                            <option value="" disabled>Saúde da Árvore</option>
-                            <option value="Saudável">Saudável</option>
-                            <option value="Doente">Doente</option>
-                            <option value="Morrendo">Morrendo</option>
-                        </select>
+                    <div className="form-grid">
+                        <div className="input-field">
+                            <FaRulerVertical className="input-icon" />
+                            <input
+                                type="number"
+                                step="0.01"
+                                placeholder="Altura (metros)"
+                                id="altura"
+                                name="altura"
+                                value={values.altura}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="input-field">
+                            <FaCircle className="input-icon" />
+                            <input
+                                type="number"
+                                step="0.01"
+                                placeholder="Diâmetro (cm)"
+                                id="diametro"
+                                name="diametro"
+                                value={values.diametro}
+                                onChange={handleChange}
+                            />
+                        </div>
                     </div>
 
                     <div className="input-field">
