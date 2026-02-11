@@ -1,0 +1,539 @@
+/* --- CONTAINER PRINCIPAL --- */
+.inventory-container {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-main);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.inventory-header-block {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* --- ESTILO DAS ABAS (FILTROS) --- */
+.inventory-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #666;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.tab-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: #f9f9f9;
+}
+
+/* Estado Ativo (Aba selecionada) */
+.tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+}
+
+/* ESTADO VAZIO (Quando não há itens na aba) */
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 2px dashed #ddd;
+    color: #999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+/* --- GRID LAYOUT --- */
+.inventory-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+    grid-auto-rows: auto;
+    gap: 30px;
+    margin-top: 30px;
+    width: 100%;
+}
+
+/* --- CARD --- */
+.inventory-card {
+    background: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    height: auto;
+    min-height: 350px;
+    position: relative;
+}
+
+.inventory-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+}
+
+/* --- IMAGEM --- */
+.inv-img img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* --- INFORMAÇÕES --- */
+.inv-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.inv-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 700;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+    min-height: 2.4em;
+}
+
+/* --- TAGS --- */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-tag.pendente {
+    background: #fff8e1;
+    color: #f57c00;
+    border: 1px solid #ffe0b2;
+}
+
+.status-tag.retirado {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.inv-info small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+/* --- BOTÃO --- */
+.btn-ticket {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    margin-top: auto;
+}
+
+.btn-ticket:hover {
+    background: var(--primary-dark);
+}
+
+/* --- OVERLAY DO MODAL --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+}
+
+/* --- TICKET MODAL PREMIUM (ESTILO DA TELA) --- */
+.ticket-modal {
+    background: #fff;
+    width: 100%;
+    max-width: 360px;
+    /* Levemente mais estreito para elegância */
+    border-radius: 16px;
+
+    /* --- AJUSTES DE SCROLL E TAMANHO --- */
+    max-height: 90vh;
+    /* Limita altura */
+    overflow-y: auto;
+    /* Permite rolar se necessário */
+    overflow-x: hidden;
+    /* 🚫 BLOQUEIA barra horizontal */
+
+    /* Esconde a barra de rolagem no Firefox e IE */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    display: flex;
+    flex-direction: column;
+    color: #333;
+    position: relative;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- ESCONDER BARRA DE ROLAGEM (Chrome, Safari, Opera) --- */
+.ticket-modal::-webkit-scrollbar {
+    display: none;
+    /* Remove visualmente a barra */
+}
+
+/* EFEITO DE PICOTE */
+.ticket-notch {
+    position: absolute;
+    top: 55%;
+    /* Ajustado levemente */
+    width: 30px;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.notch-left {
+    left: -15px;
+}
+
+.notch-right {
+    right: -15px;
+}
+
+/* HEADER */
+.ticket-header {
+    background: var(--bg-main);
+    padding: 12px 15px;
+    /* Compactado */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px dashed #d1d5db;
+    flex-shrink: 0;
+}
+
+.ticket-header h2 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #888;
+}
+
+/* CORPO DO TICKET */
+.ticket-body {
+    padding: 15px;
+    /* PADDING REDUZIDO (era 30px) */
+    text-align: center;
+    background: #fff;
+    flex: 1;
+    /* Ocupa espaço disponível */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ticket-main-logo {
+    width: 45px;
+    /* Logo menor */
+    margin-bottom: 2px;
+}
+
+.ticket-brand {
+    font-size: 1.2rem;
+    /* Fonte menor */
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ITEM EM DESTAQUE */
+.item-image-wrapper {
+    width: 70px;
+    /* Imagem menor (era 90px) */
+    height: 70px;
+    margin: 0 auto 5px;
+    padding: 2px;
+    border: 2px solid var(--primary);
+    border-radius: 50%;
+}
+
+.item-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.ticket-item-section h3 {
+    font-size: 1.1rem;
+    /* Fonte menor */
+    margin: 5px 0;
+    color: #1f2d16;
+}
+
+.item-type-badge {
+    background: #eee;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+/* LINHA DIVISÓRIA */
+.ticket-divider {
+    height: 1px;
+    background-image: linear-gradient(to right, #ccc 50%, transparent 50%);
+    background-size: 8px 1px;
+    background-repeat: repeat-x;
+    margin: 15px 0;
+    /* Margem reduzida */
+    opacity: 0.5;
+}
+
+/* DETALHES */
+.ticket-details {
+    text-align: left;
+    font-size: 0.85rem;
+    /* Fonte menor */
+    background: #fafafa;
+    /* Fundo sutil */
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    /* Menos espaço */
+    align-items: center;
+}
+
+.detail-row:last-child {
+    margin-bottom: 0;
+}
+
+.detail-row .label {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.detail-row .value {
+    font-weight: 600;
+    color: #333;
+}
+
+.value.status-pendente {
+    color: #f57c00;
+}
+
+.value.status-retirado {
+    color: #2e7d32;
+}
+
+/* CAIXA DE CÓDIGO */
+.ticket-code-box {
+    margin-top: 15px;
+    /* Menos margem */
+    background: #f0fdf4;
+    border: 2px dashed var(--primary);
+    padding: 10px;
+    /* Menos padding */
+    border-radius: 12px;
+    position: relative;
+}
+
+.ticket-code-box small {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.the-code {
+    font-family: 'Courier New', monospace;
+    font-size: 1.6rem;
+    /* Fonte menor */
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 2px;
+}
+
+.ticket-footer {
+    font-size: 0.7rem;
+    color: #aaa;
+    margin-top: 15px;
+    line-height: 1.3;
+}
+
+/* RODAPÉ DO MODAL */
+.ticket-actions {
+    background: #f9f9f9;
+    padding: 15px;
+    /* Menos padding */
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.btn-print {
+    background: #1f2937;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 50px;
+    border: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    font-size: 0.9rem;
+}
+
+.btn-print:hover {
+    background: #000;
+    transform: translateY(-2px);
+}
+
+/* --- CONFIGURAÇÃO DE IMPRESSÃO --- */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .inventory-grid,
+    .inventory-container>h1,
+    .inventory-container>p,
+    header,
+    .sidebar {
+        display: none !important;
+    }
+
+    .modal-overlay,
+    .ticket-modal,
+    .ticket-modal * {
+        visibility: visible !important;
+    }
+
+    .modal-overlay {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: white !important;
+        display: flex !important;
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding-top: 20px !important;
+        z-index: 99999 !important;
+    }
+
+    .ticket-modal {
+        position: relative !important;
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        transform: none !important;
+        max-width: 350px !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .ticket-notch,
+    .close-btn,
+    .ticket-actions {
+        display: none !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .inventory-tabs {
+        flex-direction: column;
+        gap: 10px;
+        padding: 0 10px;
+    }
+
+    .tab-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+    }
+}

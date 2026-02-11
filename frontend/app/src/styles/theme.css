@@ -1,0 +1,99 @@
+/* ===============================
+   TEMA LIGHT
+================================ */
+:root[data-theme="light"] {
+    --bg-main: #eef5e1;
+    --bg-card: #ffffff;
+    --bg-navbar: #c5e29f;
+
+    --text-main: #1f2d16;
+    --text-muted: #5f6f52;
+    --text-hover: #2d6a1f;
+
+    --primary: #4caf50;
+    --primary-dark: #388e3c;
+
+    --input-bg: #f8f8f8;
+    --input-border: #cfd8dc;
+    --input-text: #1f2d16;
+
+    --btn-bg: #e8e8e8;
+    --btn-text: #212121;
+    --btn-hover-bg: #212121;
+    --btn-hover-text: #ffffff;
+
+    --accent-green: #2e7d32;
+
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.12);
+    --shadow-strong: 0 8px 25px rgba(0, 0, 0, 0.25);
+
+    --benefit-bg: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    --benefit-border: rgba(0, 0, 0, 0.05);
+    --benefit-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+    --hero-bg: linear-gradient(135deg, #2d5016 0%, #4a7c25 50%, #5fa833 100%);
+    --hero-wave-opacity: 0.3;
+
+    --cta-bg: linear-gradient(135deg, #2d5016, #5fa833);
+
+    --bg-soft: #f1f6eb;
+
+}
+
+/* ===============================
+   TEMA DARK
+================================ */
+:root[data-theme="dark"] {
+    --bg-main: #121712;
+    --bg-card: #1a211a;
+    --bg-soft: #202a20;
+    --bg-navbar: #202a20;
+
+    --text-main: #e6efe6;
+    --text-muted: #a8b5a8;
+    --text-hover: #81c784;
+
+    --primary: #6bcf7c;
+    --primary-dark: #4fae60;
+
+    --input-bg: #1f2a1f;
+    --input-border: #2f3d2f;
+    --input-text: #e6efe6;
+
+    --btn-bg: #2c2c2c;
+    --btn-text: #ffffff;
+    --btn-hover-bg: #ffffff;
+    --btn-hover-text: #121212;
+
+    --accent-green: #81c784;
+
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, .4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, .55);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, .7);
+    --shadow-strong: 0 8px 25px rgba(0, 0, 0, 0.8);
+
+    --benefit-bg: linear-gradient(135deg, #1e1e1e, #262626);
+    --benefit-border: rgba(255, 255, 255, 0.08);
+    --benefit-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+
+    --hero-bg: linear-gradient(135deg, #0f1f0b 0%, #1e3a14 50%, #2f6b1f 100%);
+    --hero-wave-opacity: 0.15;
+
+    --cta-bg: linear-gradient(135deg, #0f1f0b, #2f6b1f);
+
+}
+
+.Toastify__toast {
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.Toastify__toast--success {
+    background: var(--accent-green);
+    color: #fff;
+}
+
+.Toastify__toast--error {
+    background: #e53935;
+    color: #fff;
+}

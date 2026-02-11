@@ -1,0 +1,192 @@
+.timelineContainer {
+    /* Remove margens extras para colar no cabeçalho do modal */
+    margin-top: 0;
+    padding: 0;
+
+    /* Fundo transparente para assumir a cor do Modal (que usa --bg-card) */
+    background: transparent;
+    border-radius: 12px;
+    box-shadow: none;
+}
+
+/* CARTÃO DE UPLOAD */
+.uploadCard {
+    /* Usa --bg-soft para dar um destaque sutil (verde claro no light / verde escuro no dark) */
+    background: var(--bg-soft);
+
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+
+    /* Usa a borda padrão do seus inputs */
+    border: 1px dashed var(--input-border);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* CAMPO DE TEXTO */
+.noteInput {
+    padding: 10px;
+
+    /* O input deve ter cor de card para contrastar com o fundo soft */
+    background: var(--bg-card);
+
+    /* Borda e texto padrão */
+    border: 1px solid var(--input-border);
+    color: var(--text-main);
+
+    border-radius: 6px;
+    resize: none;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.noteInput:focus {
+    border-color: var(--primary);
+}
+
+/* BOTÃO VERDE */
+.uploadBtn {
+    background-color: var(--primary);
+    color: #fff;
+    /* Mantém branco para contraste com o verde */
+    padding: 10px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s, transform 0.1s;
+    border: none;
+}
+
+.uploadBtn:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+/* LINHA DO TEMPO VERTICAL */
+.timeline {
+    position: relative;
+    padding-left: 20px;
+    /* Usa a cor de borda padrão para a linha */
+    border-left: 2px solid var(--input-border);
+    margin-top: 20px;
+}
+
+.timelineItem {
+    position: relative;
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+/* A BOLINHA NA LINHA */
+.timelinePoint {
+    position: absolute;
+    /* Ajuste centralizado: Left = -(metade do width + borda) */
+    /* width 14 + border 3 = 20 total. Metade = 10. Left ~ -9px/-10px para alinhar na linha de 2px */
+    left: -9px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+
+    background: var(--primary);
+
+    /* A borda da bolinha simula um "corte". Deve ser a cor do fundo do Modal (--bg-card) */
+    border: 3px solid var(--bg-card);
+
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.timelineDate {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    /* Verde acinzentado */
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* CONTEÚDO (FOTO E TEXTO) */
+.timelineContent img {
+    max-width: 100%;
+    /* Garante responsividade dentro do modal */
+    width: 150px;
+    /* Tamanho base um pouco maior */
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: 1px solid var(--input-border);
+}
+
+.timelineContent p {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    /* Cor principal do texto */
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Novo container para alinhar Data e Lixeira */
+.itemHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-right: 10px;
+    /* Espaço para não colar na borda */
+}
+
+/* O Botão de Excluir */
+.deleteBtn {
+    background: transparent;
+    border: none;
+    color: #e57373;
+    /* Vermelho suave */
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.deleteBtn:hover {
+    color: #d32f2f;
+    /* Vermelho forte */
+    background-color: rgba(255, 0, 0, 0.05);
+}
+
+/* Aviso de Modo Visualização */
+.permissionWarning {
+    background: var(--bg-soft);
+    /* <--- A cor que adapta ao tema (verde claro/escuro) */
+    border: 1px dashed var(--input-border);
+    /* Borda tracejada igual ao card de upload */
+    color: var(--text-muted);
+
+    padding: 30px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.permissionWarning p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+}

@@ -1,0 +1,171 @@
+/* Fundo Escuro */
+.picker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    backdrop-filter: blur(3px);
+}
+
+/* Modal Branco */
+.picker-modal {
+    background: white;
+    width: 100%;
+    max-width: 700px;
+    height: 80vh;
+    /* Altura boa para ver mapa */
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: fadeIn 0.3s ease;
+}
+
+.picker-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+}
+
+.picker-header h3 {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 1.2rem;
+}
+
+.picker-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Mapa */
+.picker-map-container {
+    flex: 1;
+    /* Ocupa todo espaço disponível */
+    position: relative;
+}
+
+/* --- BOTÃO DE MIRA NO MAPA --- */
+.picker-locate-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    /* Acima do mapa Leaflet */
+    background: white;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #444;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+}
+
+.picker-locate-btn:hover {
+    background: #f0f0f0;
+    color: #2e7d32;
+    transform: scale(1.05);
+}
+
+/* Spinner do botão */
+.picker-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ccc;
+    border-top-color: #2e7d32;
+    border-radius: 50%;
+    animation: spinPicker 1s linear infinite;
+}
+
+@keyframes spinPicker {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Footer */
+.picker-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+}
+
+.selected-address {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.picker-confirm-btn {
+    background: #2e7d32;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.picker-confirm-btn:hover {
+    background: #1b5e20;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsivo para celular */
+@media (max-width: 600px) {
+    .picker-footer {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .selected-address {
+        max-width: 100%;
+    }
+
+    .picker-confirm-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

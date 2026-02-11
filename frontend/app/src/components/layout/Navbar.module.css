@@ -1,0 +1,261 @@
+/* ==========================================================================
+   ESTRUTURA & GLASSMORPHISM
+   ========================================================================== */
+.navbar {
+  width: 100%;
+  background-color: var(--bg-navbar);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 12px 0;
+  position: relative;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 768px) {
+  .navbar {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  /* Garante que os itens fiquem na linha */
+  flex-wrap: nowrap;
+}
+
+/* ==========================================================================
+   MARCA (ESQUERDA)
+   ========================================================================== */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo_icon {
+  height: 42px;
+  /* Ajuste conforme a imagem */
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.2));
+  transition: transform 0.4s;
+}
+
+.brand:hover .logo_icon {
+  transform: rotate(-10deg) scale(1.1);
+}
+
+.brand_name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ==========================================================================
+   LINKS DE NAVEGAÇÃO (DIREITA)
+   ========================================================================== */
+.nav_links {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 24px;
+  padding: 0;
+
+  /* --- O SEGREDO DO ALINHAMENTO --- */
+  /* margin-left: auto empurra os links (e o que vem depois) para a direita */
+  margin-left: auto;
+  margin-right: 24px;
+  /* Espaço entre os links e o perfil */
+}
+
+.item a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+  position: relative;
+  transition: color 0.3s ease;
+  white-space: nowrap;
+}
+
+.item a:hover,
+.active a {
+  color: var(--primary);
+}
+
+.item a::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: var(--primary);
+  border-radius: 50%;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  transition: transform 0.3s;
+  opacity: 0;
+}
+
+.item a:hover::after,
+.active a::after {
+  transform: translateX(-50%) scale(1);
+  opacity: 1;
+}
+
+/* ==========================================================================
+   ÁREA DO USUÁRIO
+   ========================================================================== */
+.user_area {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
+  position: relative;
+  padding-left: 24px;
+  margin-left: 10px;
+}
+
+.user_area::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 1px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.coinDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 193, 7, 0.15);
+  padding: 6px 14px;
+  border-radius: 20px;
+  color: #f57c00;
+  font-weight: 800;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.coinIcon {
+  color: #ffb300;
+}
+
+.profile_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--primary);
+  background-color: transparent;
+  color: var(--primary);
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 0;
+  transition: all 0.3s;
+  box-sizing: border-box;
+}
+
+.avatar_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile_btn:hover {
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+  transform: translateY(-1px);
+}
+
+.button_login {
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #43a047);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  transition: all 0.2s;
+}
+
+.button_login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .container {
+    flex-wrap: wrap;
+    /* Permite quebrar linha no mobile */
+    justify-content: space-between;
+  }
+
+  .nav_links {
+    order: 3;
+    /* Joga os links para baixo */
+    width: 100%;
+    justify-content: center;
+    margin: 15px 0 0 0;
+    /* Remove o margin-left: auto do desktop */
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .user_area {
+    /* No mobile, o margin-left: auto do desktop não se aplica ao user_area diretamente, 
+       então garantimos que ele fique alinhado */
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* ... seus outros estilos mobile ... */
+
+  .user_area {
+    padding-left: 0;
+    /* Remove o espaço extra no mobile */
+    margin-left: 0;
+  }
+
+  .user_area::before {
+    display: none;
+    /* Some com o risquinho no celular */
+  }
+}
+
+@media (max-width: 1024px) {
+  /* ... seu código anterior ... */
+
+  .nav_links {
+    gap: 12px;
+    /* Reduz o espaço entre os links (era 15px) */
+  }
+
+  .item a {
+    font-size: 0.85rem;
+    /* Diminui levemente a fonte (era 0.95rem) */
+  }
+}

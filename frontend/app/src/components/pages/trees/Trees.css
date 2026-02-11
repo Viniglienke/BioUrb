@@ -1,0 +1,251 @@
+/* ==========================================================================
+   FORMULARIO DE ÁRVORES (PADRÃO MODAL)
+   ========================================================================== */
+
+.trees-form-content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* --- GRID SYSTEM --- */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+/* --- GRUPO DE INPUT --- */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group label,
+.section-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  text-align: left;
+}
+
+/* --- WRAPPER DO INPUT --- */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Ícone Centralizado (Padrão) */
+.input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 0.9rem;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ícone Alinhado ao Topo (para Textarea) */
+.input-icon.icon-top {
+  top: 14px;
+  transform: none;
+}
+
+/* Estilo dos Campos */
+.input-wrapper input,
+.input-wrapper select,
+.input-wrapper textarea {
+  width: 100%;
+  padding: 12px 14px 12px 38px;
+  border-radius: 10px;
+
+  /* Tema */
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--input-text);
+
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.input-wrapper input:focus,
+.input-wrapper select:focus,
+.input-wrapper textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  background-color: var(--bg-card);
+}
+
+.input-wrapper textarea {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
+.input-wrapper.disabled input {
+  opacity: 0.7;
+  cursor: not-allowed;
+  border-color: var(--input-border);
+}
+
+/* --- BOTÃO --- */
+.btn-submit-tree {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-submit-tree:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
+}
+
+/* --- SELETOR DE PRIVACIDADE (Igual ao Monitoring.css) --- */
+.visibility-group {
+  margin-bottom: 20px;
+  background: var(--bg-soft);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid var(--input-border);
+}
+
+.visibility-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.vis-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+
+  border: 2px solid var(--input-border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.vis-option:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-soft);
+}
+
+/* Estado Selecionado: Público (Verde) */
+.vis-option.selected:first-child {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.15);
+  color: #15803d;
+}
+
+:root[data-theme="dark"] .vis-option.selected:first-child {
+  color: #4ade80;
+}
+
+/* Estado Selecionado: Privado (Laranja) */
+.vis-option.selected:last-child {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+:root[data-theme="dark"] .vis-option.selected:last-child {
+  color: #fbbf24;
+}
+
+.vis-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* --- RESPONSIVIDADE (MOBILE FIX) --- */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-group {
+    width: 100%;
+  }
+
+  .trees-form-content {
+    padding: 0;
+  }
+}
+
+/* --- BOTÕES DE AÇÃO DENTRO DO INPUT (GPS + MAPA) --- */
+
+/* Classe para o textarea: abre espaço para os botões não ficarem em cima do texto */
+.input-with-actions {
+  padding-right: 90px !important;
+}
+
+/* Classe base para o botão redondo */
+.btn-input-action {
+  position: absolute;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s, opacity 0.2s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-input-action:hover {
+  transform: scale(1.1);
+}
+
+.btn-input-action:active {
+  transform: scale(0.95);
+}
+
+/* Botão GPS (Verde / Primary) - Fica mais à esquerda */
+.btn-action-gps {
+  right: 50px;
+  background-color: var(--primary);
+}
+
+/* Botão Mapa (Azul) - Fica na ponta direita */
+.btn-action-map {
+  right: 10px;
+  background-color: #2196f3;
+}

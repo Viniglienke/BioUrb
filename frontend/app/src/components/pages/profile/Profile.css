@@ -1,0 +1,686 @@
+/* ===============================
+   RESET E VARIÁVEIS GLOBAIS
+================================ */
+:root {
+    --green-main: #16a34a;
+    --green-soft: #dcfce7;
+    --green-dark: #14532d;
+
+    --gray-900: #111827;
+    --gray-700: #374151;
+    --gray-500: #6b7280;
+    --gray-300: #d1d5db;
+    --gray-100: #f3f4f6;
+
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: #f8fafc;
+}
+
+/* ===============================
+   CONTAINER PRINCIPAL
+================================ */
+.profile-container {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 24px;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--gray-900);
+}
+
+.profile-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+/* ===============================
+   HEADER
+================================ */
+.profile-header {
+    background: linear-gradient(135deg, #bbf7d0, #86efac);
+    padding: 48px 24px 0;
+    text-align: center;
+    border-bottom-left-radius: 32px;
+    border-bottom-right-radius: 32px;
+}
+
+/* ===============================
+   AVATAR
+================================ */
+.avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.avatar-wrapper {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 5px solid white;
+    background: white;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.25s ease;
+}
+
+.avatar-wrapper:hover {
+    transform: scale(1.06);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-icon {
+    font-size: 120px;
+    color: var(--gray-300);
+}
+
+.avatar-edit-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.6rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.avatar-wrapper:hover .avatar-edit-overlay {
+    opacity: 1;
+}
+
+.user-name {
+    margin-top: 20px;
+    font-size: 2.2rem;
+    /* antes ~1.7 */
+    font-weight: 900;
+    color: var(--green-dark);
+    letter-spacing: -0.5px;
+}
+
+.user-email {
+    font-size: 1.05rem;
+    /* antes 0.9 */
+    color: var(--gray-600);
+    margin-top: 0;
+}
+
+
+/* ===============================
+   TAGS
+================================ */
+.role-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.tag.user {
+    background: var(--green-soft);
+    color: var(--green-dark);
+}
+
+.tag.admin {
+    background: #7c3aed;
+    color: white;
+}
+
+.tag.partner {
+    background: #0ea5e9;
+    color: white;
+}
+
+/* ===============================
+   STATS
+================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: -56px;
+    padding-bottom: 24px;
+    position: relative;
+    z-index: 10;
+}
+
+.stat-card {
+    background: white;
+    border-radius: var(--radius-md);
+    padding: 20px 12px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 8px;
+}
+
+.coin-card .stat-icon-box {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.tree-card .stat-icon-box {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.area-card .stat-icon-box {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.stat-info h3 {
+    margin: 0;
+    font-size: 2.2rem;
+    /* antes ~1.5 */
+    font-weight: 900;
+    color: var(--gray-900);
+    line-height: 1.1;
+}
+
+.stat-info span {
+    font-size: 0.8rem;
+    /* antes 0.65 */
+    color: var(--gray-500);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   SEÇÕES
+================================ */
+.section-block {
+    padding: 28px 32px;
+}
+
+.management-section {
+    padding-top: 80px;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   BOTÕES
+================================ */
+.action-buttons-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.action-btn {
+    border: none;
+    padding: 18px;
+    border-radius: var(--radius-sm);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.action-btn:hover {
+    opacity: 0.92;
+}
+
+.admin-theme {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.partner-theme {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* ===============================
+   BASE COMUM — BOTÕES DE AÇÃO
+================================ */
+.action-btn-simple,
+.logout-btn {
+    width: 100%;
+    padding: 16px;
+    min-height: 56px;
+
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    font-weight: 700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    cursor: pointer;
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+/* Hover (elevação padrão) */
+.action-btn-simple:hover,
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+}
+
+/* Microinteração de clique */
+.action-btn-simple:active,
+.logout-btn:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+/* ===============================
+   MEUS RESGATES — PRIMÁRIO
+================================ */
+.action-btn-simple {
+    background: var(--bg-soft);
+    border: 1px solid var(--input-border);
+    color: var(--text-main);
+
+    margin-bottom: 14px;
+    /* espaço para o logout */
+}
+
+.action-btn-simple svg {
+    color: var(--accent-green);
+    font-size: 1.2rem;
+}
+
+/* Hover */
+.action-btn-simple:hover {
+    background: var(--cta-bg);
+    color: #ffffff;
+}
+
+.action-btn-simple:hover svg {
+    color: #ffffff;
+}
+
+/* ===============================
+   SAIR DA CONTA — DESTRUTIVO
+================================ */
+.logout-btn {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    color: #ef4444;
+}
+
+.logout-btn svg {
+    font-size: 1.1rem;
+}
+
+/* Hover destrutivo */
+.logout-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+
+/* ===============================
+   MODAL
+================================ */
+.avatar-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.avatar-modal {
+    background: white;
+    width: 100%;
+    max-width: 400px;
+    padding: 28px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hover);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.modal-header button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-500);
+
+    /* Tamanho fixo para criar uma área de clique redonda */
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+
+    /* Centralizar o ícone X */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.modal-header button:hover {
+    background-color: var(--gray-100);
+    /* Fundo cinza claro ao passar o mouse */
+    color: #ef4444;
+    /* Vermelho suave indicando "fechar" */
+    transform: rotate(90deg);
+    /* Pequena animação de giro */
+}
+
+.avatars-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.avatar-option {
+    width: 100%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+}
+
+.avatar-option.selected {
+    border-color: var(--green-main);
+    background: var(--green-soft);
+}
+
+.upload-section {
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.btn-upload-photo {
+    width: 100%;
+    padding: 12px;
+    border-radius: 50px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.modal-divider {
+    color: var(--text-main);
+}
+
+/* ===============================
+   RESPONSIVO
+================================ */
+@media (min-width: 640px) {
+    .action-buttons-grid {
+        flex-direction: row;
+    }
+
+    .stat-info h3 {
+        font-size: 1.9rem;
+    }
+
+    .user-name {
+        font-size: 2.5rem;
+    }
+}
+
+/* =====================================
+   PROFILE — DARK MODE
+===================================== */
+:root[data-theme="dark"] body {
+    background: var(--bg-main);
+}
+
+/* Card principal */
+:root[data-theme="dark"] .profile-card {
+    background: var(--bg-card);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Header */
+:root[data-theme="dark"] .profile-header {
+    background: linear-gradient(135deg,
+            #0f1f0b,
+            #1e3a14,
+            #2f6b1f);
+}
+
+/* Avatar */
+:root[data-theme="dark"] .avatar-wrapper {
+    background: var(--bg-card);
+    border-color: #1e2a1e;
+}
+
+:root[data-theme="dark"] .avatar-icon {
+    color: #3f4f3f;
+}
+
+:root[data-theme="dark"] .avatar-edit-overlay {
+    background: rgba(0, 0, 0, 0.55);
+}
+
+/* Nome e email */
+:root[data-theme="dark"] .user-name {
+    color: var(--text-main);
+}
+
+:root[data-theme="dark"] .user-email {
+    color: var(--text-muted);
+}
+
+/* Tags */
+:root[data-theme="dark"] .tag.user {
+    background: rgba(129, 199, 132, 0.15);
+    color: var(--accent-green);
+}
+
+:root[data-theme="dark"] .tag.admin {
+    background: linear-gradient(135deg, #6d28d9, #7c3aed);
+}
+
+:root[data-theme="dark"] .tag.partner {
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
+}
+
+/* Stats cards */
+:root[data-theme="dark"] .stat-card {
+    background: var(--bg-soft);
+    box-shadow: var(--shadow-md);
+}
+
+:root[data-theme="dark"] .stat-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+:root[data-theme="dark"] .stat-info h3 {
+    color: var(--text-main);
+}
+
+:root[data-theme="dark"] .stat-info span {
+    color: var(--text-muted);
+}
+
+/* Ícones dos stats */
+:root[data-theme="dark"] .coin-card .stat-icon-box {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+:root[data-theme="dark"] .tree-card .stat-icon-box {
+    background: rgba(34, 197, 94, 0.18);
+    color: #4ade80;
+}
+
+:root[data-theme="dark"] .area-card .stat-icon-box {
+    background: rgba(56, 189, 248, 0.18);
+    color: #38bdf8;
+}
+
+/* Section title */
+:root[data-theme="dark"] .section-title {
+    color: var(--text-muted);
+}
+
+/* Botões */
+:root[data-theme="dark"] .action-btn {
+    box-shadow: var(--shadow-md);
+}
+
+:root[data-theme="dark"] .admin-theme {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+}
+
+:root[data-theme="dark"] .partner-theme {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+/* Logout */
+:root[data-theme="dark"] .logout-btn {
+    background: var(--bg-soft);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+:root[data-theme="dark"] .logout-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+}
+
+/* Modal */
+:root[data-theme="dark"] .avatar-modal {
+    background: var(--bg-card);
+    box-shadow: var(--shadow-lg);
+}
+
+:root[data-theme="dark"] .modal-header {
+    color: var(--text-main);
+}
+
+:root[data-theme="dark"] .avatar-option {
+    background: var(--bg-soft);
+}
+
+:root[data-theme="dark"] .avatar-option.selected {
+    border-color: var(--accent-green);
+    background: rgba(129, 199, 132, 0.15);
+}
+
+:root[data-theme="dark"] .modal-header button {
+    color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .modal-header button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    /* Fundo claro translúcido */
+    color: #f87171;
+    /* Vermelho claro */
+}
+
+/* =================================================================
+   CORREÇÃO DE ESPAÇAMENTO (MEMBRO VS ADMIN)
+   Isso resolve o bug visual quando não tem o painel admin
+================================================================= */
+
+/* Seletor de "Irmão Adjacente" (+):
+   Aplica regra ao .section-block APENAS se ele vier 
+   imediatamente após o .profile-header.
+*/
+.profile-header+.section-block {
+    padding-top: 80px;
+    /* Compensa a margem negativa de -56px dos cards */
+}
+
+.name-edit-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-edit-profile {
+    background: transparent;
+    border: none;
+    color: var(--gray-700);
+    /* Ajuste conforme tema */
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-edit-profile:hover {
+    opacity: 1;
+    color: var(--primary);
+}

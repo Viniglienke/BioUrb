@@ -1,0 +1,733 @@
+.shop-container {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    box-sizing: border-box;
+    /* Essencial para evitar scroll horizontal */
+    overflow-x: hidden;
+    /* Corta qualquer elemento que tente sair da tela */
+}
+
+.shop-header {
+    text-align: center;
+    margin-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.shop-header h1 {
+    font-size: 2.5rem;
+    color: var(--accent-green);
+    margin-bottom: 10px;
+}
+
+.current-balance {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    padding: 10px 25px;
+    border-radius: 50px;
+    margin-top: 20px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f57c00;
+    box-shadow: var(--shadow-soft);
+}
+
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.shop-card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-strong);
+}
+
+.card-image-placeholder {
+    height: 150px;
+    background: linear-gradient(135deg, #a8ff78, #78ffd6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #fff;
+}
+
+.card-content {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-content h3 {
+    margin: 0 0 10px 0;
+    color: var(--primary);
+}
+
+.card-content p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    flex: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--input-border);
+}
+
+.price {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 800;
+    color: #f57c00;
+    font-size: 1.1rem;
+}
+
+.btn-buy {
+    padding: 8px 20px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-buy:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-buy:not(:disabled):hover {
+    background-color: var(--primary-dark);
+}
+
+.header-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    /* Permite quebrar linha se não couber */
+    width: 100%;
+}
+
+.current-balance {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f57c00;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    /* Garante que não estoure a tela no mobile */
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* BOTÃO DE ADMIN (Ajustado para igualar ao BioCoins) */
+.btn-admin-add {
+    /* Mantém o margin-top igual ao do saldo para alinhar na linha */
+    margin-top: 20px;
+
+    display: inline-flex;
+    /* Use inline-flex para comportar-se como a pílula do saldo */
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    background-color: #2e7d32;
+    color: white;
+
+    /* --- AQUI ESTÁ A CORREÇÃO --- */
+    /* Aumentamos a fonte para chegar perto do 1.5rem do saldo */
+    font-size: 0.8rem;
+
+    /* Padding igual ao do saldo (10px vertical, 25px horizontal) */
+    padding: 10px 25px;
+
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.2s;
+}
+
+.btn-admin-add:hover {
+    background-color: #1b5e20;
+    transform: translateY(-2px);
+}
+
+/* =========================================
+   MODAL DE ADMINISTRAÇÃO (FIXO E ALINHADO)
+   ========================================= */
+
+/* Fundo escuro atrás do modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    /* Top, Right, Bottom, Left = 0 */
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    /* Desfoque no fundo */
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Caixa do Modal */
+.admin-modal {
+    background: var(--bg-card);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+}
+
+/* Cabeçalho do Modal */
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-main);
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+}
+
+.modal-close:hover {
+    color: #e74c3c;
+    /* Vermelho ao passar o mouse */
+}
+
+/* Formulário e Espaçamentos */
+.admin-form {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* Espaço uniforme entre todos os campos */
+}
+
+/* Estilo unificado para Inputs, Selects e Textarea */
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--input-border, #ddd);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: var(--input-bg, #f8f9fa);
+    color: var(--text-main);
+    outline: none;
+    font-family: inherit;
+    box-sizing: border-box;
+    /* Garante que o padding não quebre o layout */
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* Foco nos campos */
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus {
+    border-color: var(--primary);
+    background-color: var(--bg-card);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+}
+
+.admin-form textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* --- CORREÇÃO DO "TORTO" (LINHA DUPLA) --- */
+/* Essa classe precisa existir especificamente aqui */
+.admin-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Divide em 2 colunas iguais */
+    gap: 16px;
+    /* O mesmo gap do flex container */
+}
+
+/* Botão de Confirmar */
+.btn-confirm {
+    margin-top: 10px;
+    background-color: var(--primary);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-confirm:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+/* Posicionamento relativo no card para o botão absoluto funcionar */
+.shop-card {
+    position: relative;
+    /* Adicione isso na classe .shop-card existente */
+}
+
+/* =========================================
+   BOTÕES DE AÇÃO EXCLUSIVOS DA LOJA
+   (Nomes de classe únicos para não quebrar o resto do site)
+   ========================================= */
+
+.admin-actions-card {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+    z-index: 20;
+}
+
+/* Estilo Base da "Bolinha" (Renomeado para shop-icon-btn) */
+.shop-icon-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #ffffff;
+    /* Fundo branco */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+    padding: 0;
+    margin: 0;
+}
+
+/* Força o tamanho do ícone APENAS nestes botões */
+.shop-icon-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    display: block !important;
+    min-width: 16px;
+}
+
+/* --- BOTÃO EDITAR (Renomeado para shop-edit) --- */
+.shop-edit {
+    color: #2980b9 !important;
+}
+
+.shop-edit svg {
+    fill: #2980b9 !important;
+}
+
+.shop-edit:hover {
+    background-color: #2980b9 !important;
+    transform: scale(1.1);
+}
+
+.shop-edit:hover svg {
+    fill: #ffffff !important;
+}
+
+/* --- BOTÃO EXCLUIR (Renomeado para shop-delete) --- */
+.shop-delete {
+    color: #e74c3c !important;
+}
+
+.shop-delete svg {
+    fill: #e74c3c !important;
+}
+
+.shop-delete:hover {
+    background-color: #e74c3c !important;
+    transform: scale(1.1);
+}
+
+.shop-delete:hover svg {
+    fill: #ffffff !important;
+}
+
+/* =========================================
+   IMAGENS PERFEITAS (OBJECT-FIT)
+   ========================================= */
+
+.card-image-placeholder {
+    width: 100%;
+    height: 200px;
+    /* Altura fixa é OBRIGATÓRIA para uniformidade */
+    background: linear-gradient(135deg, #a8ff78, #78ffd6);
+    /* Fundo padrão caso não tenha img */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Corta o que sobrar da imagem */
+    position: relative;
+}
+
+/* Isso faz a mágica acontecer */
+.card-image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Cobre todo o espaço sem distorcer (corta as bordas se preciso) */
+    object-position: center;
+    /* Centraliza a imagem */
+    transition: transform 0.3s ease;
+}
+
+.shop-card:hover .card-image-placeholder img {
+    transform: scale(1.05);
+    /* Zoom suave ao passar o mouse */
+}
+
+/* =========================================
+   SELETOR DE IMAGEM NO MODAL
+   ========================================= */
+
+.image-input-section {
+    background-color: rgba(0, 0, 0, 0.03);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+}
+
+.input-type-toggle {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-type-toggle button {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid var(--input-border);
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-muted);
+    transition: 0.2s;
+}
+
+.input-type-toggle button.active {
+    background-color: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    font-weight: 600;
+}
+
+/* Estilo do botão de Upload Customizado */
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    cursor: pointer;
+    background-color: white;
+    border: 2px dashed var(--input-border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.custom-file-upload:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+/* Esconde o input file feio original */
+input[type="file"] {
+    display: none;
+}
+
+.file-status {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* --- CROPPER (EDITOR DE IMAGEM) --- */
+
+.cropper-container {
+    background: #333;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cropper-area {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    /* Altura do editor */
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.zoom-range {
+    flex: 1;
+    cursor: pointer;
+}
+
+.cropper-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-apply-crop {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-cancel-crop {
+    background-color: transparent;
+    color: #ccc;
+    border: 1px solid #666;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cancel-crop:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* PREVIEW DA IMAGEM PRONTA */
+.preview-container {
+    margin-top: 15px;
+    text-align: center;
+    border-top: 1px dashed var(--input-border);
+    padding-top: 10px;
+}
+
+.preview-container p {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+.img-preview-final {
+    width: 100%;
+    max-width: 200px;
+    /* Tamanho da preview no modal */
+    border-radius: 8px;
+    box-shadow: var(--shadow-soft);
+    display: block;
+    margin: 0 auto 10px auto;
+}
+
+.btn-re-edit {
+    background: none;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-re-edit:hover {
+    background: var(--bg-soft);
+}
+
+/* Botão "Meus Itens" */
+.btn-my-items {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    /* Estilo Visual (Azul Escuro ou Roxo para diferenciar do Verde/Laranja) */
+    background-color: #3f51b5;
+    color: white;
+
+    font-size: 1.1rem;
+    /* Um pouco menor que o saldo */
+    padding: 10px 20px;
+
+    border-radius: 50px;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.2s ease;
+
+    /* Alinhamento na linha (importante no mobile) */
+    margin-top: 20px;
+}
+
+.btn-my-items:hover {
+    background-color: #303f9f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(63, 81, 181, 0.4);
+}
+
+/* AJUSTE MOBILE */
+@media (max-width: 480px) {
+    .btn-my-items {
+        width: 100%;
+        /* Ocupa largura total no celular */
+        margin-top: 10px;
+        /* Um pouco menos de margem entre os botões */
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsivo para celular */
+@media (max-width: 480px) {
+    .shop-container {
+        padding: 20px 15px;
+        /* Menos padding lateral */
+    }
+
+    .shop-header h1 {
+        font-size: 1.8rem;
+        /* Título menor */
+    }
+
+    .shop-header p {
+        font-size: 0.9rem;
+        padding: 0 10px;
+    }
+
+    /* Força os botões e saldo a ficarem um embaixo do outro no celular */
+    .header-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* Botão e Saldo ocupam largura total para ficarem bonitos e alinhados */
+    .current-balance,
+    .btn-admin-add {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Ajuste do card no mobile */
+    .shop-card {
+        margin: 0 auto;
+        /* Centraliza o card */
+        width: 100%;
+    }
+}

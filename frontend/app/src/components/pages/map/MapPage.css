@@ -1,0 +1,426 @@
+/* =========================================
+   ESTRUTURA DA PÁGINA E MAPA
+   ========================================= */
+.map-page-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    /* Usa o fundo principal do tema */
+    background: var(--bg-main);
+    color: var(--text-main);
+}
+
+/* Header Flutuante */
+.map-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    pointer-events: none;
+}
+
+.back-btn-map,
+.map-title-box {
+    pointer-events: auto;
+    /* Usa fundo do card */
+    background: var(--bg-card);
+    /* Borda sutil para separar no dark mode */
+    border: 1px solid var(--input-border);
+    backdrop-filter: blur(5px);
+    box-shadow: var(--shadow-soft);
+    border-radius: 12px;
+    padding: 10px 15px;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.back-btn-map {
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-main);
+    height: 50px;
+}
+
+.map-title-box h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary-dark);
+}
+
+.map-title-box p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Legenda Flutuante */
+.map-legend {
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+    right: auto;
+    z-index: 500;
+    background: var(--bg-card);
+    border: 1px solid var(--input-border);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Mantive as cores dos dots fixas pois são indicadores de status */
+.dot.green {
+    background: #2e7d32;
+}
+
+.dot.orange {
+    background: #f57c00;
+}
+
+.dot.red {
+    background: #d32f2f;
+}
+
+.dot.blue {
+    background: #2196f3;
+}
+
+/* Popup do Leaflet */
+.popup-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 150px;
+    color: #333;
+    /* Leaflet costuma forçar estilo, melhor manter ou forçar !important se necessário */
+}
+
+.popup-img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+
+.popup-content strong {
+    font-size: 1rem;
+    color: #111;
+}
+
+.popup-content button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.leaflet-top {
+    top: 80px;
+}
+
+/* Botão de GPS */
+.locate-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    bottom: auto;
+    z-index: 500;
+    width: 44px;
+    height: 44px;
+    background: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    transition: all 0.2s;
+}
+
+.locate-btn:hover {
+    background: var(--bg-soft);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+/* =========================================
+   MODAL DE DETALHES
+   ========================================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    /* Overlay sempre escuro para foco */
+    backdrop-filter: blur(4px);
+    z-index: 99999 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    overflow: hidden;
+}
+
+/* Container do Modal */
+.tree-modal {
+    background: var(--bg-card);
+    color: var(--text-main);
+    width: 100%;
+    max-width: 500px;
+    max-height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    position: relative;
+    box-shadow: var(--shadow-strong);
+    margin: 0;
+    transition: background-color 0.3s, color 0.3s;
+    border: 1px solid var(--benefit-border);
+}
+
+/* Botão Fechar */
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--btn-bg);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-muted);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.modal-close-btn:hover {
+    background: var(--btn-hover-bg);
+    color: var(--btn-hover-text);
+}
+
+.modal-header-img {
+    display: none;
+}
+
+/* CONTEÚDO COM SCROLL INTERNO */
+.modal-content {
+    padding: 25px;
+    padding-top: 25px;
+    overflow-y: auto;
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--text-muted) transparent;
+}
+
+/* Scrollbar Webkit */
+.modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: var(--input-border);
+    border-radius: 20px;
+}
+
+/* Estilos internos do Modal */
+.modal-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+    padding-right: 30px;
+}
+
+.modal-tree-id {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.modal-titles h2 {
+    margin: 0;
+    color: var(--primary-dark);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+.modal-popular-name {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-green);
+    font-weight: 600;
+    margin-top: 5px;
+    font-size: 1rem;
+}
+
+/* Specs Box (Altura/Diâmetro) */
+.modal-specs-box {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--bg-soft);
+    border: 1px solid var(--input-border);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.modal-spec-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.modal-divider {
+    width: 1px;
+    height: 25px;
+    background-color: var(--input-border);
+}
+
+/* Lista de Infos */
+.modal-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.modal-info-row strong {
+    color: var(--text-main);
+}
+
+.modal-info-row svg {
+    color: var(--accent-green);
+    margin-top: 3px;
+    flex-shrink: 0;
+}
+
+/* Privacy Badge */
+.modal-privacy-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--input-bg);
+    color: var(--text-main);
+    border: 1px solid var(--input-border);
+    align-self: flex-start;
+    font-weight: 600;
+}
+
+/* Timeline */
+.timeline-section {
+    border-top: 1px solid var(--input-border);
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+.timeline-section h3 {
+    color: var(--primary);
+}
+
+.timeline-section ::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 4px;
+}
+
+.timeline-section ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Inputs dentro do modal (caso existam) */
+.tree-modal input,
+.tree-modal textarea {
+    background-color: var(--input-bg);
+    color: var(--input-text);
+    border: 1px solid var(--input-border);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

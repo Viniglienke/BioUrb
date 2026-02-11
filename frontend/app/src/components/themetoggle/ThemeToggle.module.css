@@ -1,0 +1,67 @@
+.toggle {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: var(--bg-card);
+  box-shadow: var(--shadow-strong);
+  z-index: 9999;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.toggle:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.icon {
+  font-size: 22px;
+  color: var(--accent-green);
+  transition: transform 0.4s ease, color 0.3s ease;
+}
+
+/* animação do ícone */
+.toggle:hover .icon {
+  transform: rotate(20deg) scale(1.15);
+}
+
+/* Tema LIGHT */
+.light {
+  background: var(--bg-card);
+}
+
+/* Tema DARK */
+.dark {
+  background: var(--bg-card);
+}
+
+.dark .icon {
+  color: #ffd54f; /* sol mais quente */
+}
+
+/* Mobile tweak */
+@media (max-width: 480px) {
+  .toggle {
+    width: 52px;
+    height: 52px;
+    bottom: 18px;
+    right: 18px;
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+}

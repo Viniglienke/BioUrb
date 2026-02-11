@@ -1,0 +1,21 @@
+# Dependências
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Variáveis de Ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Builds de produção
+build/
+dist/
+
+# Logs do sistema e Mac/Windows
+.DS_Store
+Thumbs.db
+logs/
+*.log

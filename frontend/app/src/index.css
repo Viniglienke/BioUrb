@@ -1,0 +1,43 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: var(--bg-main);
+}
+
+:root {
+    --bg-main: #ECF5DF;
+    --bg-card: #ffffff;
+    --text-main: #333333;
+    --text-muted: #555555;
+    --primary: #4CAF50;
+    --primary-dark: #45a049;
+    --input-bg: #f8f8f8;
+    --input-border: #4CAF50;
+    --input-text: #155802;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  flex: 1;
+}

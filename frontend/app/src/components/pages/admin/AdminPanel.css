@@ -1,0 +1,675 @@
+/* --- 1. VARIÁVEIS BASE --- */
+:root {
+    /* MODO CLARO */
+    --bg-app: #f0f4f1;
+    --bg-header: rgba(255, 255, 255, 0.8);
+    --bg-card: #ffffff;
+    --text-main: #2d3436;
+    --text-muted: #636e72;
+    --border-color: #e0e0e0;
+    --primary: #4caf50;
+
+    /* CORES DOS BOTÕES (MODO CLARO) */
+    --btn-edit-bg: #e3f2fd;
+    /* Azul claro */
+    --btn-edit-text: #1565c0;
+    /* Azul escuro (Ícone) */
+    --btn-del-bg: #ffebee;
+    /* Vermelho claro */
+    --btn-del-text: #c62828;
+    /* Vermelho escuro (Ícone) */
+}
+
+/* --- MODO ESCURO (Classes .dark-theme ou .dark) --- */
+.admin-container.dark-theme,
+body.dark .admin-container {
+    --bg-app: #121212;
+    --bg-header: rgba(30, 30, 30, 0.95);
+    --bg-card: #1e1e1e;
+    --text-main: #e0e0e0;
+    --text-muted: #a0a0a0;
+    --border-color: #333;
+
+    /* CORES DOS BOTÕES (MODO ESCURO) */
+    --btn-edit-bg: #2c3e50;
+    --btn-edit-text: #64b5f6;
+    /* Azul neon */
+    --btn-del-bg: #4a2c2c;
+    --btn-del-text: #ef5350;
+    /* Vermelho neon */
+}
+
+/* --- 2. LAYOUT GERAL --- */
+.admin-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    transition: background-color 0.3s;
+}
+
+/* --- 3. SIDEBAR (CORREÇÃO: TEXTO SEMPRE CLARO) --- */
+.admin-sidebar {
+    width: 280px;
+    background: linear-gradient(160deg, #14281d, #0f1c15);
+    /* Sempre escuro */
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-brand {
+    display: flex;
+    flex-direction: column;
+    /* Logo em cima, texto embaixo (ou row se preferir lado a lado) */
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+    margin-bottom: 40px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.sidebar-brand img {
+    height: 60px;
+    /* Tamanho da logo */
+    width: auto;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    /* Sombra para destaque */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.sidebar-brand h2 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    text-align: center;
+
+    /* Efeito de Gradiente no Texto */
+    background: linear-gradient(to right, #fff, #a5d6a7);
+
+    /* Compatibilidade Webkit (Chrome, Safari, Edge) */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    /* Propriedade Padrão (Firefox, Futuro) */
+    background-clip: text;
+    color: transparent;
+    /* Garante que o texto fique transparente para mostrar o fundo */
+}
+
+/* Efeito Hover: A logo cresce um pouco */
+.sidebar-brand:hover img {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.sidebar-brand:hover {
+    opacity: 0.9;
+}
+
+.admin-sidebar nav button {
+    background: transparent;
+    border: none;
+    color: #b2bec3 !important;
+    /* Cinza claro sempre visível */
+    padding: 16px 20px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s;
+}
+
+.admin-sidebar nav button:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.1);
+    padding-left: 25px;
+}
+
+.admin-sidebar nav button.active {
+    background: var(--primary);
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+}
+
+/* --- 4. CONTEÚDO E HEADER --- */
+.admin-content {
+    flex: 1;
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    background: var(--bg-header);
+    backdrop-filter: blur(10px);
+    padding: 15px 25px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--text-main);
+}
+
+/* --- 5. TABELA E BOTÕES (CORREÇÃO DOS ÍCONES) --- */
+.content-table-wrapper {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.admin-table th {
+    text-align: left;
+    padding: 15px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.admin-table td {
+    padding: 15px;
+    color: var(--text-main);
+    vertical-align: middle;
+    background: var(--bg-card);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.admin-table td:first-child {
+    border-left: 1px solid var(--border-color);
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.admin-table td:last-child {
+    border-right: 1px solid var(--border-color);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+/* AQUI ESTÁ A CORREÇÃO DOS ÍCONES */
+.admin-container .actions-cell {
+    display: flex;
+    gap: 10px;
+}
+
+.admin-container .btn-edit,
+.admin-container .btn-delete {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+
+    /* Centraliza e Força Exibição */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 1.1rem;
+    /* Garante tamanho do ícone */
+    transition: 0.2s;
+}
+
+/* Garante que o SVG tenha tamanho e cor */
+.admin-container .btn-edit svg,
+.admin-container .btn-delete svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+    /* Pega a cor do texto do botão */
+}
+
+/* Cores Específicas Edit (Azul) */
+.admin-container .btn-edit {
+    background-color: var(--btn-edit-bg);
+    color: var(--btn-edit-text);
+    /* Cor do ícone */
+}
+
+.admin-container .btn-edit:hover {
+    background-color: var(--btn-edit-text);
+    color: #ffffff;
+}
+
+/* Cores Específicas Delete (Vermelho) */
+.admin-container .btn-delete {
+    background-color: var(--btn-del-bg);
+    color: var(--btn-del-text);
+    /* Cor do ícone */
+}
+
+.admin-container .btn-delete:hover {
+    background-color: var(--btn-del-text);
+    color: #ffffff;
+}
+
+/* Botão Entregar */
+.admin-container .btn-confirm {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* --- 6. EXTRAS (Badges e Inputs) --- */
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.badge.Pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.badge.Retirado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.code-cell {
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--primary);
+    background: rgba(76, 175, 80, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Busca */
+.search-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    width: 300px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text-main);
+    width: 100%;
+}
+
+/* --- 7. MODAL --- */
+.modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.admin-modal {
+    background: var(--bg-card);
+    color: var(--text-main);
+    padding: 40px;
+    border-radius: 24px;
+    width: 450px;
+    border-top: 5px solid var(--primary);
+}
+
+.admin-modal input {
+    background: var(--bg-app);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    width: 100%;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+}
+
+.save-btn {
+    background: var(--primary);
+    color: white;
+}
+
+/* --- CORREÇÃO DE EMERGÊNCIA PARA ÍCONES --- */
+
+/* 1. Força o ícone (SVG) a ter tamanho fixo e visibilidade total */
+.admin-table .btn-edit svg,
+.admin-table .btn-delete svg,
+.admin-table .btn-confirm svg {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    min-height: 20px !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    fill: currentColor !important;
+    /* Pega a cor do texto do botão */
+}
+
+/* 2. Garante que os botões tenham cor de texto definida (pois o ícone usa ela) */
+.admin-table .btn-edit {
+    color: #1565c0 !important;
+    /* Azul forte */
+}
+
+.admin-table .btn-delete {
+    color: #c62828 !important;
+    /* Vermelho forte */
+}
+
+/* 3. Centraliza o conteúdo do botão à força */
+.admin-table .btn-edit,
+.admin-table .btn-delete {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+/* --- CHECKBOX "É ADMINISTRADOR" (ESTILO CARD) --- */
+.checkbox-label {
+    /* 1. Layout Flex para alinhar caixa e texto lado a lado */
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px;
+    /* Espaço entre o quadrado e o texto */
+
+    /* 2. Estilo de Cartão (igual aos inputs de texto) */
+    width: 100%;
+    box-sizing: border-box;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    padding: 15px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+
+    /* 3. Margens para separar dos outros campos */
+    margin-top: 10px;
+    margin-bottom: 25px;
+
+    /* 4. Reseta a fonte (para não parecer um título pequeno) */
+    color: var(--text-main) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    text-transform: none !important;
+    /* Remove o maiúsculo forçado */
+    transition: all 0.2s ease;
+}
+
+/* Efeito ao passar o mouse */
+.checkbox-label:hover {
+    border-color: var(--primary);
+    background-color: var(--bg-card);
+    /* Clareia levemente */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* --- CORREÇÃO DO QUADRADINHO (INPUT) --- */
+.checkbox-label input[type="checkbox"] {
+    /* Força o tamanho do quadrado */
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    /* Impede de esmagar */
+
+    /* Remove a largura de 100% que os inputs globais têm */
+    margin: 0 !important;
+    padding: 0 !important;
+
+    /* Cor do "V" quando marcado */
+    accent-color: var(--primary);
+    cursor: pointer;
+
+    /* Remove bordas extras de inputs de texto */
+    border: none !important;
+    background: transparent !important;
+}
+
+/* --- ESTILO PARA O SELECT DO MODAL --- */
+.admin-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-size: 1rem;
+    margin-bottom: 20px;
+    cursor: pointer;
+    outline: none;
+    transition: border 0.3s;
+}
+
+.admin-select:focus {
+    border-color: var(--primary);
+}
+
+/* --- CORES DAS BADGES DE CARGO --- */
+.badge.role-admin {
+    background: #e0bbff;
+    /* Roxo claro */
+    color: #4a148c;
+    /* Roxo escuro */
+    border: 1px solid #d1c4e9;
+}
+
+.badge.role-loja {
+    background: #b3e5fc;
+    /* Azul claro */
+    color: #01579b;
+    /* Azul escuro */
+    border: 1px solid #81d4fa;
+}
+
+.badge.role-comum {
+    background: #f5f5f5;
+    /* Cinza claro */
+    color: #616161;
+    /* Cinza escuro */
+    border: 1px solid #e0e0e0;
+}
+
+/* Ajuste no modo escuro para as badges ficarem legíveis */
+.dark-theme .badge.role-admin {
+    background: #4a148c;
+    color: #e0bbff;
+    border-color: #6a1b9a;
+}
+
+.dark-theme .badge.role-loja {
+    background: #01579b;
+    color: #b3e5fc;
+    border-color: #0277bd;
+}
+
+.dark-theme .badge.role-comum {
+    background: #424242;
+    color: #f5f5f5;
+    border-color: #616161;
+}
+
+/* =================================================================
+   RESPONSIVIDADE (TABLETS E CELULARES)
+================================================================= */
+
+/* 1. Ajuste Geral da Tabela (Para não quebrar o layout) */
+.content-table-wrapper {
+    /* Permite rolar a tabela lateralmente se não couber na tela */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Rolagem suave no iOS */
+}
+
+.admin-table {
+    /* Garante que a tabela tenha um tamanho mínimo decente */
+    min-width: 600px;
+}
+
+/* 2. Regras para Telas Menores que 768px (Tablets e Celulares) */
+@media (max-width: 768px) {
+
+    /* --- LAYOUT GERAL --- */
+    .admin-container {
+        flex-direction: column;
+        /* Empilha o conteúdo */
+    }
+
+    /* --- SIDEBAR VIRA BOTTOM BAR (Barra Inferior) --- */
+    .admin-sidebar {
+        width: 100%;
+        height: auto;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+        flex-direction: row;
+        /* Ícones lado a lado */
+        padding: 10px 20px;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        /* Sombra invertida */
+        background: linear-gradient(to right, #14281d, #0f1c15);
+    }
+
+    /* Esconde a logo e o título no celular para economizar espaço */
+    .sidebar-brand {
+        display: none;
+    }
+
+    /* Ajusta o container dos botões */
+    .admin-sidebar nav {
+        display: flex;
+        width: 100%;
+        justify-content: space-around;
+        /* Distribui os botões */
+        gap: 0;
+    }
+
+    /* Estilo dos botões na barra inferior */
+    .admin-sidebar nav button {
+        width: auto;
+        padding: 10px;
+        flex-direction: column;
+        /* Ícone em cima, texto (se couber) embaixo */
+        font-size: 0.75rem;
+        /* Texto menor */
+        justify-content: center;
+        border-radius: 50px;
+    }
+
+    .admin-sidebar nav button svg {
+        font-size: 1.4rem;
+        /* Ícone maior para toque */
+        margin-bottom: 2px;
+    }
+
+    .admin-sidebar nav button:hover {
+        padding-left: 10px;
+        /* Remove o efeito de "empurrar" do desktop */
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* --- CONTEÚDO PRINCIPAL --- */
+    .admin-content {
+        padding: 20px;
+        /* Adiciona margem embaixo para o conteúdo não ficar escondido atrás da barra */
+        padding-bottom: 90px;
+    }
+
+    /* --- HEADER (BUSCA E TÍTULO) --- */
+    .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .admin-header h1 {
+        font-size: 1.2rem;
+    }
+
+    .header-actions,
+    .search-box {
+        width: 100%;
+        /* Busca ocupa toda a largura */
+    }
+
+    /* --- MODAL RESPONSIVO --- */
+    .admin-modal {
+        width: 90%;
+        /* Ocupa 90% da tela */
+        max-width: none;
+        /* Remove limite fixo */
+        padding: 25px;
+        max-height: 85vh;
+        /* Se for muito alto, permite rolar */
+        overflow-y: auto;
+    }
+
+    /* Ajuste nos inputs do modal para toque */
+    .admin-modal input,
+    .admin-select {
+        padding: 15px;
+        /* Área de toque maior */
+    }
+
+    /* Checkbox maior no celular */
+    .checkbox-label {
+        padding: 12px;
+    }
+}

@@ -1,0 +1,213 @@
+/* ===============================
+   ESTILO PADRÃO DE AUTH (LOGIN/REGISTER)
+================================ */
+
+/* Espaçamento entre inputs */
+.auth-form-group {
+  margin-bottom: 20px;
+}
+
+/* Wrapper para posicionar Ícone + Input */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Ícone dentro do Input */
+.input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--accent-green);
+  font-size: 1.1rem;
+  z-index: 1;
+  pointer-events: none;
+  /* Permite clicar através do ícone */
+}
+
+/* Estilo do Input */
+.input-wrapper input {
+  width: 100%;
+  padding: 14px 14px 14px 44px;
+  /* Espaço na esquerda para o ícone */
+  border-radius: 12px;
+  /* Padronizado com o sistema */
+  font-size: 1rem;
+  color: var(--input-text);
+  background-color: var(--input-bg);
+
+  /* GLITCH FIX: Usando shadow em vez de border */
+  border: none;
+  box-shadow: 0 0 0 1px var(--input-border);
+
+  transition: all 0.2s ease-in-out;
+}
+
+/* Estado de Foco */
+.input-wrapper input:focus {
+  outline: none;
+  /* Foco usando shadow da cor primária */
+  box-shadow: 0 0 0 2px var(--primary);
+  background-color: var(--bg-card);
+}
+
+/* Estado de Erro (CPF Inválido) */
+.input-wrapper input.input-error {
+  box-shadow: 0 0 0 2px #e53935;
+  /* Vermelho */
+}
+
+.input-wrapper input.input-error:focus {
+  box-shadow: 0 0 0 3px #e53935;
+}
+
+/* Placeholder */
+.input-wrapper input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+/* ===============================
+   BOTÃO DE AÇÃO
+================================ */
+.btn-auth {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+
+  background-color: var(--primary);
+  color: #ffffff;
+
+  border: none;
+  border-radius: 12px;
+  /* Padronizado com o sistema */
+
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: var(--shadow-soft);
+}
+
+.btn-auth:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-strong);
+}
+
+.btn-auth:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  opacity: 0.7;
+}
+
+/* Animação do Loading */
+.icon-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===============================
+   RODAPÉ (LINK)
+================================ */
+.auth-footer-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.auth-footer-link a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+
+.auth-footer-link a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
+/* Essa classe será somada ao container padrão SOMENTE na tela de login */
+.login-card {
+  /* Remove a margem fixa de 50px e usa a centralização dinâmica */
+  margin: 15vh auto !important;
+
+  /* Garante que não fique largo demais */
+  max-width: 380px !important;
+}
+
+/* CORREÇÃO PARA MOBILE (Telas estreitas) */
+@media (max-width: 768px) {
+  .login-card {
+    margin: 30px auto !important;
+    max-width: none !important;
+  }
+}
+
+/* ===============================
+   LINKS ADICIONAIS (ESQUECI SENHA)
+================================ */
+
+/* Link "Esqueceu a senha?" abaixo do input */
+.forgot-password-link {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+.forgot-password-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-password-link a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Link "Voltar" no rodapé com ícone */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Botão de ver senha (Olhinho) */
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.password-toggle-btn:hover {
+  color: var(--primary);
+}
