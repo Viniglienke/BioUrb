@@ -1,116 +1,129 @@
-# 🌳 BioUrb - Sistema de Controle de Arborização Urbana (Frontend)
+# 🌳 BioUrb - Sistema de Gestão de Arborização Urbana (Frontend)
 
-Este é o **frontend** do sistema **BioUrb**, uma aplicação para **monitorar e gerenciar áreas arborizadas urbanas**. Desenvolvido com **React**, inclui autenticação de usuários, cadastro e monitoramento de árvores e um canal de contato.
+Este é o **frontend** do sistema **BioUrb**, uma aplicação moderna para **monitorar áreas verdes**, engajar cidadãos através de **gamificação** e promover a educação ambiental com **Inteligência Artificial**.
+
+Desenvolvido com **React + Vite**, o sistema oferece uma experiência fluida, responsiva e com temas claro/escuro.
 
 ---
 
 ## 🚀 Tecnologias Utilizadas
 
-- ⚛️ React
-- 🌐 React Router DOM (v6)
-- 🔗 Axios
-- 🎨 React Icons
-- 📢 React Toastify
-- 📩 EmailJS
-- 📆 date-fns
-- 💅 CSS Modules + CSS Puro
+- ⚛️ **React** (Hooks & Context API)
+- ⚡ **Vite** (Build tool rápida)
+- 🌐 **React Router DOM** (Navegação SPA)
+- 🗺️ **Leaflet / React-Leaflet** (Mapas interativos)
+- 🔗 **Axios** (Comunicação com API)
+- 🎨 **CSS Modules** & Variáveis CSS (Temas Dark/Light)
+- 📢 **React Toastify** (Notificações visuais)
+- 🤖 **Google Gemini Integration** (Chatbot "Urbaninho")
+- 📷 **Cloudinary** (Upload de imagens)
+- 🎫 **QRCode.react** (Geração de códigos de resgate)
 
 ---
 
 ## ⚙️ Funcionalidades Principais
 
-- **🔐 Autenticação** com validação de CPF, contexto React e `localStorage`.
-- **🔁 Rotas Públicas e Privadas** com `PrivateRoute`.
-- **🏠 Página Inicial** com visão geral do sistema.
-- **🌲 Cadastro de Árvores** com validações, localização e estado de saúde.
-- **📋 Monitoramento de Árvores** com edição, exclusão e envio de relatório via email.
-- **✉️ Contato** via formulário usando EmailJS.
-- **🧭 Layout Responsivo** com Navbar, Footer e feedback com `react-toastify`.
+### 🔐 Autenticação & Segurança
+- Login e Cadastro com validação de CPF.
+- **Recuperação de Senha** via e-mail (Token seguro).
+- Rotas Privadas e persistência de sessão.
+
+### 🌳 Gestão de Árvores
+- **Mapa Interativo:** Visualize árvores e áreas verdes na sua cidade.
+- **Cadastro:** Adicione novas árvores com foto, espécie e localização.
+- **Diário da Árvore:** Registre a evolução da planta e ganhe recompensas diárias.
+
+### 🎮 Gamificação (BioCoins)
+- **Moeda Virtual:** Ganhe BioCoins ao cadastrar árvores e cuidar delas.
+- **Loja Virtual:** Troque suas moedas por itens reais (adubo, sementes, brindes).
+- **Inventário:** Gerencie seus itens e gere **QR Codes** para retirar na loja física.
+
+### 🤖 Inteligência Artificial
+- **Urbaninho:** Um mascote virtual movido a IA que tira dúvidas sobre meio ambiente e cuidados com plantas.
+
+### 🎨 Interface
+- **Dark Mode:** Alternância completa entre tema claro e escuro.
+- **Responsividade:** Funciona perfeitamente em celulares e computadores.
 
 ---
 
-## 🛠️ Como Configurar e Executar
+## 🛠️ Instalação e Execução
 
 ### ✅ Pré-requisitos
 
-- Node.js (recomendado v16+)
-- NPM ou Yarn
-- Backend da API BioUrb rodando
+- Node.js (versão 18 ou superior recomendada)
+- Backend da API BioUrb rodando na porta 3001
 
-### 📦 Instalação
+### 📦 Passos
 
-1. Clone o repositório:
+1. Entre na pasta do frontend:
    ```bash
-   git clone https://github.com/Viniglienke/Projeto_Integrador.git
-   cd ./frontend/app/
-   ```
+   cd frontend/app
+
+```
 
 2. Instale as dependências:
-   ```bash
-   npm install
-   # ou
-   yarn install
-   ```
+```bash
+npm install
 
-3. Crie o arquivo `.env`:
-   ```env
-   REACT_APP_API_URL=http://localhost:3001
-   ```
+```
 
-4. Inicie a aplicação:
-   ```bash
-   npm start
-   # ou
-   yarn start
-   ```
 
-5. Acesse em: `http://localhost:5173/`
+3. **Configuração de Ambiente (.env):**
+Crie um arquivo `.env` na raiz da pasta `frontend/app` com o seguinte conteúdo:
+```env
+# URL do Backend (Sem barra no final)
+VITE_API_URL=http://localhost:3001
 
----
+```
 
-## ✉️ Configuração do EmailJS
 
-1. Crie uma conta no [EmailJS](https://www.emailjs.com/).
-2. Substitua os seguintes IDs no código:
+4. Inicie a aplicação em modo de desenvolvimento:
+```bash
+npm run dev
 
-   - `service_vk5hd8d`
-   - `template_c3yyd5r` (contato)
-   - `template_qviar4b` (relatórios)
-   - `0EZ5fZfY7LfCvIBry` (user ID)
+```
+
+
+5. Acesse no navegador (geralmente em): `http://localhost:5173/`
 
 ---
 
-## 🧩 Estrutura de Componentes
+## 🧩 Estrutura de Pastas
 
-### 🔐 `AuthContext`
+```text
+src/
+├── components/          # Componentes reutilizáveis (Botões, Inputs, Modal)
+├── context/             # Gerenciamento de estado global (Auth, Theme)
+├── img/                 # Assets estáticos (Logos, ícones)
+├── pages/               # Páginas da aplicação
+│   ├── admin/           # Painel Administrativo
+│   ├── contact/         # Formulário de Contato
+│   ├── home/            # Dashboard Principal
+│   ├── login/           # Autenticação e Recuperação de Senha
+│   ├── map/             # Mapa interativo
+│   ├── shop/            # Loja e Inventário
+│   └── trees/           # Cadastro e Detalhes de árvores
+├── routes/              # Configuração de rotas e proteção
+├── services/            # Configuração do Axios (api.js)
+└── styles/              # Variáveis globais e temas (theme.css)
 
-- Gerencia autenticação, sessão e token.
-- Utiliza `localStorage` e configura headers no Axios.
-
-### 🔒 `PrivateRoute`
-
-- Redireciona usuários não autenticados para login.
-
-### 🧭 `AppRouter`
-
-- Define rotas públicas e privadas.
-- Usa estrutura com `Navbar`, `Container` e `Footer`.
-
----
-
-## 📝 Observações Importantes
-
-- Validação de CPF feita no frontend.
-- Datas formatadas com `date-fns`.
-- Botões de editar/excluir disponíveis apenas ao dono do cadastro ou admin (`id = 1`).
-- Mensagens de sucesso e erro com `react-toastify`.
+```
 
 ---
 
-## 📞 Contato e Suporte
+## 📝 Observações
 
-Para dúvidas ou sugestões, utilize o formulário de contato na aplicação ou abra uma **issue** no repositório.
+* **Mapas:** O sistema utiliza OpenStreetMap (gratuito).
+* **Uploads:** As imagens são enviadas para o Cloudinary (via Backend).
+* **Temas:** As cores são controladas via variáveis CSS em `src/styles/theme.css`.
 
 ---
 
-**Obrigado por utilizar o BioUrb!** 🌳🌿
+## 📞 Contato
+
+Dúvidas sobre o funcionamento? Entre em contato pelo formulário no próprio site ou abra uma issue no GitHub.
+
+---
+
+**Desenvolvido por Vinícius** 🚀
