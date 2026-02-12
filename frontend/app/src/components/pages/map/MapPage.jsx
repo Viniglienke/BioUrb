@@ -12,29 +12,36 @@ import { useNavigate } from 'react-router-dom';
 import TreeTimeline from "../../../components/treetimeline/TreeTimeline";
 import './MapPage.css';
 
-// --- CONFIGURAÇÃO DE ÍCONES (NOVOS) ---
 const createModernPin = (color) => {
-    // SVG APENAS COM A GOTA (SEM ÁRVORE DENTRO)
     const svgString = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" width="38" height="38">
-      <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="40" height="48">
+      <filter id="sh" x="0" y="0" width="200%" height="200%">
+        <feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity="0.3"/>
       </filter>
-      
-      <path fill="${color}" filter="url(#shadow)" d="M384 192c0 87.4-117 243-168.3 307.2c-12.3 15.3-35.1 15.3-47.4 0C117 435 0 279.4 0 192C0 86 86 0 192 0s192 86 192 192z"/>
+
+      <path d="M50 0 C22 0 0 22 0 50 C0 85 50 120 50 120 C50 120 100 85 100 50 C100 22 78 0 50 0Z" 
+            fill="${color}" filter="url(#sh)"/>
+
+      <g transform="translate(50, 48)">
+          <rect x="-6" y="24" width="12" height="15" fill="white" />
+          
+          <polygon points="0,-25 22,5 -22,5" fill="white" />
+          <polygon points="0,-10 26,20 -26,20" fill="white" />
+          <polygon points="0,5 28,30 -28,30" fill="white" />
+      </g>
     </svg>
-  `;
+    `;
 
     return new L.DivIcon({
-        className: 'custom-pin',
+        className: 'custom-pin-container',
         html: svgString,
-        iconSize: [38, 50],    // Tamanho ajustado
-        iconAnchor: [19, 50],  // A ponta do pino fica exatamente na coordenada
-        popupAnchor: [0, -55]  // O popup abre acima do pino
+        iconSize: [40, 48],
+        iconAnchor: [20, 48],
+        popupAnchor: [0, -45]
     });
 };
 
-// Ícone de Usuário (Bolinha pulsante azul)
+// Ícone de Usuário (Bolinha pulsante azul - Mantido igual)
 const createUserIcon = () => {
     return new L.DivIcon({
         className: 'user-location-marker',
@@ -57,7 +64,7 @@ const iconSick = createModernPin('#f97316');    // Laranja Vibrante
 const iconDead = createModernPin('#ef4444');    // Vermelho Alerta
 const iconUser = createUserIcon();              // Azul
 
-// Ícone para Área Verde (Caso não tenha desenho, usa um Pin Roxo)
+// Ícone para Área Verde (Pino Roxo com desenho de árvore também, para padronizar)
 const iconArea = createModernPin('#8b5cf6');    // Roxo
 
 // --- COMPONENTE: BOTÃO DE LOCALIZAÇÃO ---
