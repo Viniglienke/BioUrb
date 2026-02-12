@@ -645,6 +645,119 @@
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
+.area-modal {
+  max-width: 650px !important;
+  /* Aumenta a largura para caber o mapa */
+}
+
+.mini-map-container {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  /* Garante que fique abaixo do header */
+}
+
+.map-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #f9f9f9;
+  border-top: 1px solid #ddd;
+}
+
+.points-count {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 600;
+}
+
+.btn-reset-map {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #c62828;
+}
+
+.btn-reset-map:hover {
+  background: #ffebee;
+}
+
+.hint-text {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.map-draw-section {
+  margin-bottom: 10px;
+}
+
+/* Estilos para a Barra de Ações do Mapa */
+.map-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn-map-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.btn-undo {
+  color: #475569;
+}
+
+.btn-undo:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.btn-reset {
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+.btn-reset:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-map-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+/* Ícone de Vértice (para override do Leaflet se precisar) */
+.vertex-icon:hover {
+  transform: scale(1.2);
+  transition: transform 0.1s;
+}
+
 /* Ajuste Mobile */
 @media (max-width: 600px) {
   .view-tabs {
@@ -657,5 +770,78 @@
     justify-content: center;
     padding: 10px 15px;
     font-size: 0.85rem;
+  }
+}
+
+/* =========================================
+   CORREÇÕES DE RESPONSIVIDADE (MOBILE)
+   ========================================= */
+
+/* 1. Ajuste Geral do Modal no Mobile */
+@media (max-width: 768px) {
+  .area-modal {
+    width: 95% !important;
+    /* Ocupa quase toda a largura */
+    max-width: none !important;
+    padding: 15px;
+    /* Reduz padding para ganhar espaço */
+    max-height: 95vh;
+    /* Evita que o modal estoure a altura da tela */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-content {
+    overflow-y: auto;
+    /* Garante scroll se o conteúdo for grande */
+  }
+
+  /* Ajusta o grid de inputs para ficar um embaixo do outro */
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+}
+
+/* 2. Ajuste da Barra de Ações do Mapa (Onde estão os botões) */
+@media (max-width: 600px) {
+  .map-actions {
+    flex-direction: column-reverse;
+    /* Coloca o texto de status em cima e botões embaixo */
+    align-items: stretch;
+    /* Estica os elementos para ocupar a largura */
+    gap: 12px;
+    padding: 12px;
+  }
+
+  /* Container dos botões (Desfazer/Limpar) */
+  .map-actions>div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* Divide os botões em 50% cada */
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btn-map-action {
+    justify-content: center;
+    /* Centraliza texto e ícone */
+    padding: 10px;
+    /* Botões maiores para dedo (touch) */
+  }
+
+  .points-count {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+}
+
+/* 3. Ajuste do Tamanho do Mapa no Mobile */
+/* Para sobrescrever o style inline de 350px se necessário */
+@media (max-height: 700px) {
+  .mini-map-container .leaflet-container {
+    height: 250px !important;
+    /* Diminui o mapa em celulares pequenos/deitados */
   }
 }

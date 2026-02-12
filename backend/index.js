@@ -300,12 +300,11 @@ app.get("/areas", async (req, res) => {
 
 // Criar área verde
 app.post("/areas", async (req, res) => {
-    const { nome, descricao, localizacao, latitude, longitude, responsavel, status, imagemUrl, usuario_id, visibilidade } = req.body;
+
+    const { nome, descricao, localizacao, latitude, longitude, responsavel, status, imagemUrl, usuario_id, visibilidade, polygonPath } = req.body;
 
     const descricaoFinal = descricao && descricao.trim() !== "" ? descricao.trim() : "Não informado";
     const responsavelFinal = responsavel && responsavel.trim() !== "" ? responsavel.trim() : "Não informado";
-
-    // Padrão publica
     const visibilidadeFinal = visibilidade === 'privada' ? 'privada' : 'publica';
 
     if (!nome || !localizacao || !usuario_id) {
@@ -315,15 +314,16 @@ app.post("/areas", async (req, res) => {
     try {
         const result = await db.query(
             `INSERT INTO areas_verdes 
-             (nome, descricao, localizacao, latitude, longitude, responsavel, status, imagem_url, usuario_id, visibilidade)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+             (nome, descricao, localizacao, latitude, longitude, responsavel, status, imagem_url, usuario_id, visibilidade, polygon_path)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
              RETURNING id`,
             [nome.trim(), descricaoFinal, localizacao.trim(), latitude || null, longitude || null,
-                responsavelFinal, status || "Ativa", imagemUrl || null, usuario_id, visibilidadeFinal]
+                responsavelFinal, status || "Ativa", imagemUrl || null, usuario_id, visibilidadeFinal,
+            polygonPath ? JSON.stringify(polygonPath) : null]
         );
-        res.status(201).json({ msg: "Área verde registrada com sucesso!", insertedId: result.rows[0].id });
+        res.status(201).json({ msg: "Área verde registrada!", insertedId: result.rows[0].id });
     } catch (err) {
-        console.error("Erro ao registrar área verde:", err);
+        console.error("Erro ao registrar área:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -331,28 +331,25 @@ app.post("/areas", async (req, res) => {
 // Atualizar área verde
 app.put("/areas/:id", async (req, res) => {
     const { id } = req.params;
-    // Adicionei 'visibilidade' aqui
-    const { nome, descricao, localizacao, latitude, longitude, responsavel, status, imagemUrl, visibilidade } = req.body;
+
+    const { nome, descricao, localizacao, latitude, longitude, responsavel, status, imagemUrl, visibilidade, polygonPath } = req.body;
 
     const descricaoFinal = descricao && descricao.trim() !== "" ? descricao.trim() : "Não informado";
     const responsavelFinal = responsavel && responsavel.trim() !== "" ? responsavel.trim() : "Não informado";
-
-    // Garante que o valor seja válido
     const visibilidadeFinal = visibilidade === 'privada' ? 'privada' : 'publica';
-
-    if (!nome || !localizacao) {
-        return res.status(400).json({ msg: "Nome e localização são obrigatórios." });
-    }
 
     try {
         await db.query(
             `UPDATE areas_verdes
              SET nome = $1, descricao = $2, localizacao = $3, latitude = $4, longitude = $5,
-                 responsavel = $6, status = $7, imagem_url = $8, visibilidade = $9
-             WHERE id = $10`,
-            [nome.trim(), descricaoFinal, localizacao.trim(), latitude, longitude, responsavelFinal, status, imagemUrl, visibilidadeFinal, id]
+                 responsavel = $6, status = $7, imagem_url = $8, visibilidade = $9, polygon_path = $10
+             WHERE id = $11`,
+            [nome.trim(), descricaoFinal, localizacao.trim(), latitude, longitude, responsavelFinal,
+                status, imagemUrl, visibilidadeFinal,
+            polygonPath ? JSON.stringify(polygonPath) : null,
+                id]
         );
-        res.json({ msg: "Área verde atualizada com sucesso!" });
+        res.json({ msg: "Área verde atualizada!" });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

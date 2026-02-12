@@ -83,10 +83,4 @@ npm run dev
 
 ---
 
-## 📄 Licença
-
-Este projeto foi desenvolvido como parte de um Projeto Integrador. Sinta-se à vontade para contribuir!
-
----
-
 Desenvolvido por **Vinícius** 🚀
