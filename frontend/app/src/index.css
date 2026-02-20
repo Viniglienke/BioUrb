@@ -33,11 +33,16 @@ body {
 }
 
 .app-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .app-main {
-  flex: 1;
+    flex: 1;
+}
+
+/* Garante que as notificações fiquem por cima de TODOS os modais */
+.Toastify__toast-container {
+    z-index: 999999 !important;
 }

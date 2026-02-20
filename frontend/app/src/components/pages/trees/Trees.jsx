@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUser, FaTree, FaCalendarAlt, FaHeartbeat, FaMapMarkerAlt,
-  FaLeaf, FaGlobeAmericas, FaRulerVertical, FaExpand, FaLock,
-  FaMap
+  FaLeaf, FaGlobeAmericas, FaLock, FaMap, FaUsers
 } from "react-icons/fa";
 import { format, isAfter, parseISO, isValid } from "date-fns";
 import { toast } from "react-toastify";
@@ -31,8 +30,6 @@ const Trees = () => {
     plantingDate: "",
     lifecondition: "",
     location: "",
-    altura: "",
-    diametro: "",
     areaVerdeId: "",
     visibilidade: "publica",
     latitude: null,
@@ -40,7 +37,7 @@ const Trees = () => {
   });
 
   /* ===============================
-      LOAD DATA
+     LOAD DATA
   ================================ */
   useEffect(() => {
     // Tenta pegar do contexto primeiro, se não, vai no storage
@@ -62,13 +59,12 @@ const Trees = () => {
       setAreas(areasData);
     } catch {
       console.error("Erro ao buscar áreas");
-      // Não precisa travar a tela com toast de erro aqui, só deixa sem áreas
       setAreas([]);
     }
   };
 
   /* ===============================
-      LÓGICA ROBUSTA DE GPS
+     LÓGICA GPS E MAPA
   ================================ */
   // Helper para Promessificar o GPS
   const getPosition = (options) => {
@@ -91,7 +87,6 @@ const Trees = () => {
 
     try {
       // TENTATIVA 1: Alta Precisão (GPS) - Timeout de 5s
-      // Se passar de 5s, ele lança erro e cai no catch
       const pos = await getPosition({ enableHighAccuracy: true, timeout: 5000, maximumAge: 0 });
       updateFormWithLocation(pos, toastId);
 
@@ -122,7 +117,7 @@ const Trees = () => {
 
     setValues(prev => ({
       ...prev,
-      location: `Lat: ${lat.toFixed(6)}, Long: ${lng.toFixed(6)}`, // Preenche o texto visual
+      location: `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`, // Texto limpo desde o início
       latitude: lat,
       longitude: lng
     }));
@@ -134,8 +129,30 @@ const Trees = () => {
     setTimeout(adjustTextareaHeight, 100);
   };
 
+  const handleLocationPicked = (data) => {
+    // Se vier com o nome genérico, ignora e usa só Lat/Lng. Se vier nome de rua, mantém a rua + Lat/Lng
+    let cleanAddress = data.addressText;
+    if (!cleanAddress || cleanAddress.includes("Localização") || cleanAddress.includes("Clique")) {
+      cleanAddress = "";
+    }
+
+    const locText = cleanAddress
+      ? `${cleanAddress} - Lat: ${data.lat.toFixed(5)}, Lng: ${data.lng.toFixed(5)}`
+      : `Lat: ${data.lat.toFixed(5)}, Lng: ${data.lng.toFixed(5)}`;
+
+    setValues(prev => ({
+      ...prev,
+      location: locText,
+      latitude: data.lat,
+      longitude: data.lng
+    }));
+
+    setShowMapPicker(false);
+    toast.success("Localização atualizada pelo mapa!");
+  };
+
   /* ===============================
-      OUTROS HANDLERS
+     OUTROS HANDLERS
   ================================ */
   const adjustTextareaHeight = () => {
     if (locationRef.current) {
@@ -144,24 +161,8 @@ const Trees = () => {
     }
   };
 
-  const handleLocationPicked = (data) => {
-    setValues(prev => ({
-      ...prev,
-      location: `${data.addressText} (Lat: ${data.lat.toFixed(5)}, Lng: ${data.lng.toFixed(5)})`,
-      latitude: data.lat,
-      longitude: data.lng
-    }));
-    setShowMapPicker(false);
-    setTimeout(adjustTextareaHeight, 100);
-    toast.success("Localização atualizada pelo mapa!");
-  };
-
   const handleChange = (e) => {
     let { name, value } = e.target;
-    // Troca vírgula por ponto para numéricos
-    if (name === "altura" || name === "diametro") {
-      value = value.replace(',', '.');
-    }
     setValues((prev) => ({ ...prev, [name]: value }));
     if (name === "location") adjustTextareaHeight();
   };
@@ -170,10 +171,12 @@ const Trees = () => {
     e.preventDefault();
 
     const dataSelecionada = parseISO(values.plantingDate);
+    // Ajuste para evitar problema de timezone bloqueando o dia de hoje
+    const adjustedDate = new Date(dataSelecionada.getTime() + dataSelecionada.getTimezoneOffset() * 60000);
     const hoje = new Date();
 
     if (!values.plantingDate || !isValid(dataSelecionada)) return toast.error("Data inválida.");
-    if (isAfter(dataSelecionada, hoje)) return toast.error("Data não pode ser futura.");
+    if (isAfter(adjustedDate, hoje)) return toast.error("Data não pode ser futura.");
 
     // Pega ID do usuário (Contexto ou Storage)
     const storedUser = JSON.parse(localStorage.getItem("@Auth:user"));
@@ -185,9 +188,6 @@ const Trees = () => {
       const payload = {
         ...values,
         plantingDate: format(dataSelecionada, "yyyy-MM-dd"),
-        // Garante que string vazia vire null para o backend
-        altura: values.altura ? parseFloat(values.altura) : null,
-        diametro: values.diametro ? parseFloat(values.diametro) : null,
         areaVerdeId: values.areaVerdeId || null,
         usuario_id: currentUserId,
       };
@@ -215,7 +215,7 @@ const Trees = () => {
   const maxDate = new Date().toISOString().split("T")[0];
 
   /* ===============================
-      RENDER
+     RENDER
   ================================ */
   return (
     <FormBase
@@ -227,25 +227,27 @@ const Trees = () => {
 
         {/* PRIVACIDADE */}
         <div className="visibility-group">
-          <label className="section-label">Privacidade do Registro</label>
-          <div className="visibility-options">
-            <div
-              className={`vis-option ${values.visibilidade === 'publica' ? 'selected' : ''}`}
-              onClick={() => setValues(prev => ({ ...prev, visibilidade: 'publica' }))}
-            >
-              <FaGlobeAmericas /> Público
+          <label className="section-label">Tipo de Registro</label>
+          <div className="visibility-options" style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
+
+            <div className={`vis-option vis-privada ${values.visibilidade === 'privada' ? 'selected' : ''}`} onClick={() => setValues(prev => ({ ...prev, visibilidade: 'privada' }))} style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem' }}>
+              <FaLock /> Privada
             </div>
-            <div
-              className={`vis-option ${values.visibilidade === 'privada' ? 'selected' : ''}`}
-              onClick={() => setValues(prev => ({ ...prev, visibilidade: 'privada' }))}
-            >
-              <FaLock /> Privado
+
+            <div className={`vis-option vis-publica ${values.visibilidade === 'publica' ? 'selected' : ''}`} onClick={() => setValues(prev => ({ ...prev, visibilidade: 'publica' }))} style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem' }}>
+              <FaGlobeAmericas /> Pública
             </div>
+
+            <div className={`vis-option vis-comunidade ${values.visibilidade === 'comunidade' ? 'selected' : ''}`} onClick={() => setValues(prev => ({ ...prev, visibilidade: 'comunidade' }))} style={{ flex: 1, minWidth: '100px', fontSize: '0.85rem' }}>
+              <FaUsers /> Comunidade
+            </div>
+
           </div>
-          <small className="vis-hint">
-            {values.visibilidade === 'publica'
-              ? "Sua árvore aparecerá no mapa da comunidade."
-              : "Aparecerá apenas no seu monitoramento pessoal."}
+
+          <small className="vis-hint" style={{ display: 'block', marginTop: '10px', height: '30px' }}>
+            {values.visibilidade === 'privada' && "Apenas você pode ver e gerenciar esta árvore."}
+            {values.visibilidade === 'publica' && "Todos veem no mapa, mas só você adiciona registros."}
+            {values.visibilidade === 'comunidade' && "Aberta a todos. Qualquer pessoa que visitar o local poderá adicionar registros."}
           </small>
         </div>
 
@@ -325,31 +327,7 @@ const Trees = () => {
           </div>
         </div>
 
-        {/* LINHA 4 */}
-        <div className="form-row">
-          <div className="form-group">
-            <label>Altura (m)</label>
-            <div className="input-wrapper">
-              <FaRulerVertical className="input-icon" />
-              <input
-                type="number" step="0.01" name="altura"
-                placeholder="0.00" onChange={handleChange}
-              />
-            </div>
-          </div>
-          <div className="form-group">
-            <label>Diâmetro (cm)</label>
-            <div className="input-wrapper">
-              <FaExpand className="input-icon" />
-              <input
-                type="number" step="0.01" name="diametro"
-                placeholder="0.00" onChange={handleChange}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* LINHA 5 - LOCALIZAÇÃO */}
+        {/* LINHA 4 - LOCALIZAÇÃO */}
         <div className="form-group">
           <label>
             Localização
@@ -361,7 +339,6 @@ const Trees = () => {
               name="location"
               className="input-with-actions"
               value={values.location}
-              // MUDANÇA 1: Placeholder mais instrutivo
               placeholder="Clique no botão de GPS ou Mapa para preencher automaticamente..."
               required
               ref={locationRef}
@@ -397,7 +374,6 @@ const Trees = () => {
             </button>
           </div>
 
-          {/* MUDANÇA 2: Texto agnóstico (serve pra PC e Celular) e Aviso sobre o Mapa */}
           <small style={{ fontSize: '0.75rem', color: '#555', marginTop: '6px', display: 'block', lineHeight: '1.4' }}>
             <strong style={{ color: '#e65100' }}>Atenção:</strong> Para que esta árvore apareça no <strong>Mapa Interativo</strong>, as coordenadas são obrigatórias.
             <br />
@@ -405,13 +381,15 @@ const Trees = () => {
           </small>
         </div>
 
-        {/* MODAL DO MAPA */}
+        {/* MODAL DO MAPA (com z-index forçado) */}
         {showMapPicker && (
-          <LocationPicker
-            onClose={() => setShowMapPicker(false)}
-            onConfirm={handleLocationPicked}
-            initialPosition={values.latitude ? { lat: values.latitude, lng: values.longitude } : null}
-          />
+          <div style={{ position: 'relative', zIndex: 99999 }}>
+            <LocationPicker
+              onClose={() => setShowMapPicker(false)}
+              onConfirm={handleLocationPicked}
+              initialPosition={values.latitude ? { lat: values.latitude, lng: values.longitude } : null}
+            />
+          </div>
         )}
 
         <button type="submit" className="btn-submit-tree" disabled={isLoadingLocation}>
@@ -419,7 +397,6 @@ const Trees = () => {
         </button>
       </div>
 
-      {/* CSS Inline para o spinner simples */}
       <style>{`
         .spinner-small {
           width: 12px; height: 12px;

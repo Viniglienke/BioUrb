@@ -153,7 +153,7 @@ app.get("/stats", async (req, res) => {
 // Rota para cadastrar árvore (ATUALIZADA COM VISIBILIDADE)
 app.post("/trees", async (req, res) => {
     // Recebemos 'visibilidade' do frontend agora
-    const { treeName, popularName, lifecondition, location, plantingDate, altura, diametro,
+    const { treeName, popularName, lifecondition, location, plantingDate,
         latitude, longitude, imagemUrl, areaVerdeId, usuario_id, visibilidade } = req.body;
 
     if (!usuario_id || !treeName || !lifecondition || !location || !plantingDate) {
@@ -161,16 +161,17 @@ app.post("/trees", async (req, res) => {
     }
 
     // Define padrão como 'publica' se não vier nada
-    const visibilidadeFinal = visibilidade === 'privada' ? 'privada' : 'publica';
+    const visibilidadeAceita = ['privada', 'publica', 'comunidade'];
+    const visibilidadeFinal = visibilidadeAceita.includes(visibilidade) ? visibilidade : 'publica';
 
     try {
         await db.query("BEGIN");
 
         const result = await db.query(
             `INSERT INTO arvore (nome_cientifico, nome_popular, data_plantio, estado_saude, localizacao,
-                                altura, diametro, latitude, longitude, imagem_url, area_verde_id, usuario_id, visibilidade)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING id`,
-            [treeName, popularName, plantingDate, lifecondition, location, altura, diametro,
+                                latitude, longitude, imagem_url, area_verde_id, usuario_id, visibilidade)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+            [treeName, popularName, plantingDate, lifecondition, location,
                 latitude, longitude, imagemUrl, areaVerdeId, usuario_id, visibilidadeFinal]
         );
 
@@ -220,7 +221,7 @@ app.get("/trees", async (req, res) => {
 app.put("/trees/:id", async (req, res) => {
     const { id } = req.params;
     // Adicionei 'visibilidade' aqui
-    const { treeName, popularName, lifecondition, location, plantingDate, altura, diametro,
+    const { treeName, popularName, lifecondition, location, plantingDate,
         latitude, longitude, imagemUrl, areaVerdeId, visibilidade } = req.body;
 
     if (!treeName || !lifecondition || !location || !plantingDate) {
@@ -228,16 +229,17 @@ app.put("/trees/:id", async (req, res) => {
     }
 
     // Garante que o valor seja válido
-    const visibilidadeFinal = visibilidade === 'privada' ? 'privada' : 'publica';
+    const visibilidadeAceita = ['privada', 'publica', 'comunidade'];
+    const visibilidadeFinal = visibilidadeAceita.includes(visibilidade) ? visibilidade : 'publica';
 
     try {
         await db.query(
             `UPDATE arvore
              SET nome_cientifico = $1, nome_popular = $2, data_plantio = $3, estado_saude = $4,
-                 localizacao = $5, altura = $6, diametro = $7, latitude = $8, longitude = $9,
-                 imagem_url = $10, area_verde_id = $11, visibilidade = $12
-             WHERE id = $13`,
-            [treeName, popularName, plantingDate, lifecondition, location, altura, diametro,
+                 localizacao = $5, latitude = $6, longitude = $7,
+                 imagem_url = $8, area_verde_id = $9, visibilidade = $10
+             WHERE id = $11`,
+            [treeName, popularName, plantingDate, lifecondition, location,
                 latitude, longitude, imagemUrl, areaVerdeId, visibilidadeFinal, id]
         );
 
@@ -247,14 +249,43 @@ app.put("/trees/:id", async (req, res) => {
     }
 });
 
-// Deletar árvore
+// Deletar árvore e limpar fotos do Cloudinary
 app.delete("/trees/:id", async (req, res) => {
     const { id } = req.params;
 
     try {
+        await db.query("BEGIN"); // Inicia a transação
+
+        // 1. Busca todas as fotos do diário dessa árvore
+        const fotosDiario = await db.query("SELECT imagem_url FROM diario_arvore WHERE arvore_id = $1", [id]);
+
+        // 2. Apaga as fotos do diário do Cloudinary
+        for (let row of fotosDiario.rows) {
+            if (row.imagem_url) {
+                const publicId = getPublicIdFromUrl(row.imagem_url);
+                if (publicId) await cloudinary.uploader.destroy(publicId).catch(e => console.error("Erro Cloudinary:", e));
+            }
+        }
+
+        // 3. Apaga os registros do diário no banco (Evita erro de chave estrangeira)
+        await db.query("DELETE FROM diario_arvore WHERE arvore_id = $1", [id]);
+
+        // 4. Verifica se a PRÓPRIA árvore tem uma foto e apaga do Cloudinary
+        const arvoreRes = await db.query("SELECT imagem_url FROM arvore WHERE id = $1", [id]);
+        if (arvoreRes.rows.length > 0 && arvoreRes.rows[0].imagem_url) {
+            const publicIdArvore = getPublicIdFromUrl(arvoreRes.rows[0].imagem_url);
+            if (publicIdArvore) await cloudinary.uploader.destroy(publicIdArvore).catch(e => console.error("Erro Cloudinary:", e));
+        }
+
+        // 5. Finalmente, apaga a árvore do banco
         await db.query("DELETE FROM arvore WHERE id = $1", [id]);
-        res.json({ msg: "Árvore excluída com sucesso!" });
+
+        await db.query("COMMIT"); // Confirma as exclusões
+        res.json({ msg: "Árvore e todo o seu histórico de fotos foram excluídos com sucesso!" });
+
     } catch (err) {
+        await db.query("ROLLBACK"); // Desfaz tudo se der erro
+        console.error("Erro ao deletar árvore completa:", err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -739,7 +770,7 @@ const getPublicIdFromUrl = (url) => {
     try {
         const splitUrl = url.split('/');
         const filename = splitUrl.pop().split('.')[0]; // Pega o nome sem extensão
-        const folder = splitUrl.pop(); // Pega a pasta (ex: biourb_trees)
+        const folder = splitUrl.pop(); // Pega a pasta
         const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-z]+$/;
         const match = url.match(regex);
         return match ? match[1] : null;
@@ -750,12 +781,11 @@ const getPublicIdFromUrl = (url) => {
 };
 
 // ==================================================================
-// ROTAS DO DIÁRIO (COM SEGURANÇA: APENAS DONO OU ADMIN)
+// ROTAS DO DIÁRIO
 // ==================================================================
 
-// 1. Criar Registro (Upload + Moedas + Verificação de Dono)
+// 1. Criar Registro (Upload + Moedas + Grava o Autor + Verifica Comunidade)
 app.post("/timeline", async (req, res) => {
-    // Recebe userId para validação de segurança
     const { treeId, photoUrl, note, date, userId } = req.body;
 
     if (!treeId || !photoUrl || !userId) {
@@ -763,72 +793,73 @@ app.post("/timeline", async (req, res) => {
     }
 
     try {
-        // --- VERIFICAÇÃO DE SEGURANÇA ---
-        // Busca quem é o dono da árvore e se o usuário solicitante é admin
+        await db.query("BEGIN");
+
+        // --- NOVA VERIFICAÇÃO DE SEGURANÇA (COM VISIBILIDADE) ---
+        // Pega os dados da árvore (dono e visibilidade) e os dados do usuário (admin e nome)
         const checkAuth = await db.query(
-            `SELECT a.usuario_id, u.is_admin 
+            `SELECT a.usuario_id as dono_id, a.visibilidade, u.is_admin, u.nome as nome_autor 
              FROM arvore a, usuario u 
              WHERE a.id = $1 AND u.id = $2`,
             [treeId, userId]
         );
 
         if (checkAuth.rows.length === 0) {
+            await db.query("ROLLBACK");
             return res.status(404).json({ msg: "Árvore ou usuário não encontrados." });
         }
 
-        const { usuario_id: donoId, is_admin: isAdmin } = checkAuth.rows[0];
+        const { dono_id, is_admin, visibilidade, nome_autor } = checkAuth.rows[0];
 
-        // Se NÃO for o dono E NÃO for admin, bloqueia.
-        if (donoId !== userId && !isAdmin) {
-            return res.status(403).json({ msg: "Acesso negado: Você não é o dono desta árvore." });
+        // REGRA: Se não for o dono nem admin, só passa se a árvore for 'comunidade'
+        if (dono_id !== userId && !is_admin) {
+            if (visibilidade !== 'comunidade') {
+                await db.query("ROLLBACK");
+                return res.status(403).json({ msg: "Esta árvore é Pública, mas não é da Comunidade. Apenas o dono pode adicionar registros." });
+            }
         }
-        // --------------------------------
+        // --------------------------------------------------------
 
-        await db.query("BEGIN");
-
-        // Verifica se essa árvore já deu moeda hoje
+        // Verifica se essa árvore já deu moeda hoje (Bloqueio de Spam de Moedas)
+        const stringDataExata = (date || new Date().toISOString()).split('T')[0];
         const checkToday = await db.query(
             `SELECT id FROM diario_arvore 
-             WHERE arvore_id = $1 
-             AND recompensa_concedida = true
-             AND data_registro::date = CURRENT_DATE`,
-            [treeId]
+             WHERE arvore_id = $1 AND recompensa_concedida = true AND data_registro::text LIKE $2`,
+            [treeId, `${stringDataExata}%`]
         );
 
         const jaGanhouHoje = checkToday.rows.length > 0;
-        let msg = "Registro salvo no diário!";
+        let msg = "Registro adicionado ao diário!";
         let novoSaldo = null;
 
-        // Insere o registro
+        // Insere o registro SALVANDO O usuario_id (Quem tirou a foto)
         const result = await db.query(
-            `INSERT INTO diario_arvore (arvore_id, imagem_url, observacao, data_registro, recompensa_concedida) 
-             VALUES ($1, $2, $3, $4, $5) 
-             RETURNING id, arvore_id, imagem_url, observacao, data_registro`,
-            [treeId, photoUrl, note, date || new Date(), !jaGanhouHoje]
+            `INSERT INTO diario_arvore (arvore_id, imagem_url, observacao, data_registro, recompensa_concedida, usuario_id) 
+             VALUES ($1, $2, $3, $4, $5, $6) 
+             RETURNING id, arvore_id, imagem_url, observacao, data_registro, usuario_id`,
+            [treeId, photoUrl, note, date || new Date().toISOString(), !jaGanhouHoje, userId]
         );
 
-        // Se NÃO ganhou hoje ainda, dá as moedas PARA O DONO
+        // Dá as moedas para quem tirou a foto
         if (!jaGanhouHoje) {
-            await db.query("UPDATE usuario SET saldo = saldo + 10 WHERE id = $1", [donoId]);
-
-            // Se quem postou é o dono, atualiza o saldo dele na resposta
-            if (donoId === userId) {
-                const userRes = await db.query("SELECT saldo FROM usuario WHERE id = $1", [userId]);
-                novoSaldo = userRes.rows[0].saldo;
-            }
-            msg = "Registro salvo! +10 BioCoins (Bônus Diário) 🪙";
+            await db.query("UPDATE usuario SET saldo = saldo + 10 WHERE id = $1", [userId]);
+            const userRes = await db.query("SELECT saldo FROM usuario WHERE id = $1", [userId]);
+            novoSaldo = userRes.rows[0].saldo;
+            msg = "Excelente registro! +10 BioCoins pela contribuição 🪙";
         } else {
-            msg = "Registro salvo! (Bônus diário já coletado hoje)";
+            msg = "Registro salvo! (As moedas diárias desta árvore já foram coletadas)";
         }
 
         await db.query("COMMIT");
 
         res.status(201).json({
             ...result.rows[0],
-            treeId: result.rows[0].arvore_id, // Adaptação para frontend
-            photoUrl: result.rows[0].imagem_url, // Adaptação para frontend
-            note: result.rows[0].observacao, // Adaptação para frontend
-            date: result.rows[0].data_registro, // Adaptação para frontend
+            treeId: result.rows[0].arvore_id,
+            photoUrl: result.rows[0].imagem_url,
+            note: result.rows[0].observacao,
+            date: result.rows[0].data_registro,
+            usuario_id: result.rows[0].usuario_id,
+            nome_autor: nome_autor, // Já devolvemos o nome para exibir na hora
             newBalance: novoSaldo,
             msg: msg
         });
@@ -836,26 +867,31 @@ app.post("/timeline", async (req, res) => {
     } catch (err) {
         await db.query("ROLLBACK");
         console.error("ERRO AO SALVAR TIMELINE:", err);
-        res.status(500).json({ error: "Erro ao salvar no banco: " + err.message });
+        res.status(500).json({ error: "Erro ao salvar no banco." });
     }
 });
 
-// 2. Listar Registros
+// 2. Listar Registros (Trazendo o nome de quem postou)
 app.get("/timeline", async (req, res) => {
     const { treeId } = req.query;
     try {
         const result = await db.query(
-            `SELECT * FROM diario_arvore WHERE arvore_id = $1 ORDER BY data_registro DESC`,
+            `SELECT d.*, u.nome as nome_autor 
+             FROM diario_arvore d 
+             LEFT JOIN usuario u ON d.usuario_id = u.id
+             WHERE arvore_id = $1 
+             ORDER BY data_registro DESC`,
             [treeId]
         );
 
-        // Formata para o frontend
         const formatted = result.rows.map(item => ({
             id: item.id,
             treeId: item.arvore_id,
             photoUrl: item.imagem_url,
             note: item.observacao,
-            date: item.data_registro
+            date: item.data_registro,
+            usuario_id: item.usuario_id,
+            nome_autor: item.nome_autor || 'Usuário Anônimo'
         }));
 
         res.json(formatted);
@@ -864,7 +900,7 @@ app.get("/timeline", async (req, res) => {
     }
 });
 
-// 3. EXCLUIR REGISTRO (Com retorno do Saldo Real)
+// 3. EXCLUIR REGISTRO
 app.delete("/timeline/:id", async (req, res) => {
     const { id } = req.params;
     const { userId } = req.body;
@@ -874,13 +910,11 @@ app.delete("/timeline/:id", async (req, res) => {
     try {
         await db.query("BEGIN");
 
-        // 1. Busca dados da foto e do dono
-        const itemRes = await db.query(`
-            SELECT d.*, a.usuario_id as dono_id
-            FROM diario_arvore d
-            JOIN arvore a ON d.arvore_id = a.id
-            WHERE d.id = $1
-        `, [id]);
+        const itemRes = await db.query(
+            `SELECT d.*, a.usuario_id as dono_id 
+             FROM diario_arvore d JOIN arvore a ON d.arvore_id = a.id 
+             WHERE d.id = $1`, [id]
+        );
 
         if (itemRes.rows.length === 0) {
             await db.query("ROLLBACK");
@@ -889,44 +923,34 @@ app.delete("/timeline/:id", async (req, res) => {
 
         const item = itemRes.rows[0];
 
-        // 2. Verifica permissão (Admin ou Dono)
         const adminCheck = await db.query("SELECT is_admin FROM usuario WHERE id = $1", [userId]);
         const isAdmin = adminCheck.rows[0]?.is_admin;
 
-        if (item.dono_id !== userId && !isAdmin) {
+        // Só pode apagar se for o Admin, o Dono da Árvore, OU o Autor da Foto
+        if (item.dono_id !== userId && item.usuario_id !== userId && !isAdmin) {
             await db.query("ROLLBACK");
-            return res.status(403).json({ msg: "Acesso negado." });
+            return res.status(403).json({ msg: "Acesso negado. Você só pode apagar suas próprias fotos." });
         }
 
-        // 3. Deleta do Cloudinary
+        // Deleta do Cloudinary
         if (item.imagem_url) {
             const publicId = getPublicIdFromUrl(item.imagem_url);
             if (publicId) await cloudinary.uploader.destroy(publicId);
         }
 
-        // 4. Lógica do Estorno + Busca do Saldo Novo
         let novoSaldo = null;
 
-        if (item.recompensa_concedida) {
-            // Remove moeda do DONO da árvore
-            await db.query("UPDATE usuario SET saldo = saldo - 10 WHERE id = $1", [item.dono_id]);
-
-            // BUSCA O SALDO ATUALIZADO NO BANCO
-            const userRes = await db.query("SELECT saldo FROM usuario WHERE id = $1", [item.dono_id]);
+        // Se a moeda foi concedida, remove a moeda de QUEM POSTOU (item.usuario_id)
+        if (item.recompensa_concedida && item.usuario_id) {
+            await db.query("UPDATE usuario SET saldo = saldo - 10 WHERE id = $1", [item.usuario_id]);
+            const userRes = await db.query("SELECT saldo FROM usuario WHERE id = $1", [item.usuario_id]);
             novoSaldo = userRes.rows[0].saldo;
         }
 
-        // 5. Deleta do Banco
         await db.query("DELETE FROM diario_arvore WHERE id = $1", [id]);
-
         await db.query("COMMIT");
 
-        // 6. Retorna o saldo novo para o Frontend atualizar
-        res.json({
-            msg: "Registro excluído.",
-            newBalance: novoSaldo // Envia null se não houve estorno, ou o valor se houve
-        });
-
+        res.json({ msg: "Registro excluído.", newBalance: novoSaldo });
     } catch (err) {
         await db.query("ROLLBACK");
         res.status(500).json({ error: err.message });

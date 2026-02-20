@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
-import { FaCamera, FaSpinner, FaTrash, FaLock } from "react-icons/fa";
+import { FaCamera, FaImages, FaSpinner, FaTrash, FaLock, FaMapMarkerAlt, FaUserEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { uploadTreePhoto } from "../../services/storageService";
 import { api } from "../../services/api";
 import styles from "./TreeTimeline.module.css";
 
-// Recebe treeOwnerId via props
-const TreeTimeline = ({ treeId, treeOwnerId }) => {
+const TreeTimeline = ({ treeId, treeOwnerId, treeLat, treeLng, treeVisibility }) => {
     const [uploading, setUploading] = useState(false);
+    const [verifyingLocation, setVerifyingLocation] = useState(false);
     const [entries, setEntries] = useState([]);
     const [description, setDescription] = useState("");
     const [loadingData, setLoadingData] = useState(true);
 
-    // Pega dados do usuário logado
     const user = JSON.parse(localStorage.getItem("@Auth:user"));
 
-    // Lógica de Permissão: É Admin OU É o Dono da árvore
-    // Nota: user.isAdmin pode vir como string ou boolean dependendo do banco, o !! garante boolean
-    const canEdit = user && (user.isAdmin || user.id === treeOwnerId);
+    // Detecta se é celular ou PC
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    const isOwnerOrAdmin = user && (user.isAdmin || user.id === treeOwnerId);
+
+    // Regra de visualização do painel de Upload
+    const canViewUpload = isOwnerOrAdmin || (user && treeVisibility === 'comunidade');
 
     useEffect(() => {
         const fetchTimeline = async () => {
@@ -37,15 +40,83 @@ const TreeTimeline = ({ treeId, treeOwnerId }) => {
     }, [treeId]);
 
     const updateLocalBalance = (newSaldo) => {
-        // Atualiza o localStorage para persistir se der F5
         const storedUser = JSON.parse(localStorage.getItem("@Auth:user"));
         if (storedUser) {
             storedUser.saldo = newSaldo;
             localStorage.setItem("@Auth:user", JSON.stringify(storedUser));
-
-            // O GRANDE TRUQUE: Dispara um evento global que o Header vai ouvir
             window.dispatchEvent(new Event("balanceUpdated"));
         }
+    };
+
+    // Haversine
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371e3;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    // --- FUNÇÃO QUE SÓ CHAMA O INPUT SE TUDO DER CERTO ---
+    const triggerFileInput = (source) => {
+        // Mostra o aviso do PC apenas na hora exata de abrir o input
+        if (source === 'camera' && !isMobile) {
+            toast.info("No computador, esta opção abrirá o explorador de arquivos ou sua webcam.", { autoClose: 4000 });
+        }
+        document.getElementById(`timeline-file-upload-${source}`).click();
+    };
+
+    const handleAddRecordClick = (source) => {
+        // Dono e Admin pulam o GPS e vão direto para o Input
+        if (isOwnerOrAdmin) {
+            triggerFileInput(source);
+            return;
+        }
+
+        // Validação da Comunidade
+        if (!treeLat || !treeLng) {
+            toast.error("Árvore sem coordenadas. Impossível validar GPS.");
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            toast.error("Seu navegador não suporta GPS.");
+            return;
+        }
+
+        setVerifyingLocation(true);
+        const toastId = toast.loading("Verificando sua localização exata...");
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                if (position.coords.accuracy > 150) {
+                    setVerifyingLocation(false);
+                    toast.update(toastId, { render: `Sinal de GPS fraco (Margem de erro: ${Math.round(position.coords.accuracy)}m). Vá para um local a céu aberto.`, type: "error", isLoading: false, autoClose: 5000 });
+                    return; // Interrompe aqui, não abre input nem aviso de PC
+                }
+
+                const userLat = position.coords.latitude;
+                const userLng = position.coords.longitude;
+                const distance = calculateDistance(userLat, userLng, treeLat, treeLng);
+                setVerifyingLocation(false);
+
+                if (distance <= 100) {
+                    toast.update(toastId, { render: `Alvo alcançado! (${Math.round(distance)}m). Liberação concedida!`, type: "success", isLoading: false, autoClose: 3000 });
+
+                    // Chama a função que abre o input (e mostra o aviso do PC se for o caso)
+                    triggerFileInput(source);
+                } else {
+                    toast.update(toastId, { render: `Muito longe! Você está a ${Math.round(distance)}m. Aproxime-se (máx 100m).`, type: "error", isLoading: false, autoClose: 6000 });
+                }
+            },
+            (error) => {
+                console.error(error);
+                setVerifyingLocation(false);
+                toast.update(toastId, { render: "Erro ao obter GPS. Ative a localização de alta precisão no seu dispositivo.", type: "error", isLoading: false, autoClose: 5000 });
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
     };
 
     const handleFileChange = async (e) => {
@@ -60,9 +131,9 @@ const TreeTimeline = ({ treeId, treeOwnerId }) => {
             const newEntryData = {
                 treeId: treeId,
                 photoUrl: photoUrl,
-                note: description || "Registro de crescimento.",
+                note: description || "Registro da comunidade.",
                 date: new Date().toISOString(),
-                userId: user.id // Enviamos quem está tentando postar para o backend validar
+                userId: user.id
             };
 
             const { data } = await api.post("/timeline", newEntryData);
@@ -78,33 +149,27 @@ const TreeTimeline = ({ treeId, treeOwnerId }) => {
 
         } catch (error) {
             console.error(error);
-            // Se o backend bloquear, mostra o erro aqui
             toast.error(error.response?.data?.msg || "Erro ao salvar registro.");
         } finally {
             setUploading(false);
+            e.target.value = null;
         }
     };
 
-    const handleDelete = async (id) => {
+    const handleDelete = async (id, entryUserId) => {
         if (!window.confirm("Tem certeza que deseja apagar essa lembrança?")) return;
 
         try {
-            // Agora pegamos a resposta 'data' do axios
             const { data } = await api.delete(`/timeline/${id}`, { data: { userId: user.id } });
-
-            // Remove da lista visual
             setEntries(entries.filter(entry => entry.id !== id));
 
-            // CORREÇÃO: Usa o saldo que veio do servidor (Fonte da Verdade)
-            // Se newBalance não for null/undefined, significa que o saldo mudou.
             if (data.newBalance !== undefined && data.newBalance !== null) {
-                // Só atualiza se eu for o dono (para não bugar saldo de admin moderando)
-                if (user.id === treeOwnerId) {
+                if (user.id === entryUserId) {
                     updateLocalBalance(data.newBalance);
                 }
             }
 
-            toast.success(data.msg); // Usa a mensagem do servidor
+            toast.success(data.msg);
         } catch (error) {
             toast.error(error.response?.data?.msg || "Erro ao excluir.");
         }
@@ -115,60 +180,94 @@ const TreeTimeline = ({ treeId, treeOwnerId }) => {
     return (
         <div className={styles.timelineContainer}>
 
-            {/* 1. SÓ MOSTRA O CARD DE UPLOAD SE TIVER PERMISSÃO */}
-            {canEdit ? (
+            {canViewUpload ? (
                 <div className={styles.uploadCard}>
+                    {!isOwnerOrAdmin && (
+                        <div style={{ fontSize: '0.8rem', color: '#f57c00', marginBottom: '5px', display: 'flex', alignItems: 'center', gap: '5px', background: 'rgba(245, 124, 0, 0.1)', padding: '8px', borderRadius: '6px' }}>
+                            <FaMapMarkerAlt /> Árvore da Comunidade: Requer GPS ativo (Máx 100m)
+                        </div>
+                    )}
                     <textarea
                         placeholder="Escreva uma observação..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         className={styles.noteInput}
                     />
-                    <label className={styles.uploadBtn}>
-                        {uploading ? <FaSpinner className="icon-spin" /> : <FaCamera />}
-                        <span>{uploading ? "Salvando..." : "Adicionar Foto"}</span>
-                        <input type="file" accept="image/*" onChange={handleFileChange} hidden disabled={uploading} />
-                    </label>
+
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            type="button"
+                            className={styles.uploadBtn}
+                            onClick={() => handleAddRecordClick('camera')}
+                            style={{ flex: 1, cursor: verifyingLocation || uploading ? 'wait' : 'pointer', opacity: verifyingLocation || uploading ? 0.7 : 1 }}
+                            disabled={uploading || verifyingLocation}
+                        >
+                            {uploading || verifyingLocation ? <FaSpinner className="icon-spin" /> : <FaCamera />}
+                            <span>Câmera</span>
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.uploadBtn}
+                            onClick={() => handleAddRecordClick('gallery')}
+                            style={{ flex: 1, backgroundColor: '#2196f3', cursor: verifyingLocation || uploading ? 'wait' : 'pointer', opacity: verifyingLocation || uploading ? 0.7 : 1 }}
+                            disabled={uploading || verifyingLocation}
+                        >
+                            {uploading || verifyingLocation ? <FaSpinner className="icon-spin" /> : <FaImages />}
+                            <span>Galeria</span>
+                        </button>
+                    </div>
+
+                    <input id="timeline-file-upload-camera" type="file" accept="image/*" capture="environment" onChange={handleFileChange} hidden />
+                    <input id="timeline-file-upload-gallery" type="file" accept="image/*" onChange={handleFileChange} hidden />
                 </div>
             ) : (
                 <div className={styles.permissionWarning}>
                     <FaLock size={24} style={{ opacity: 0.6 }} />
-                    <p>Modo Visualização: Apenas o dono pode adicionar registros.</p>
+                    <p>
+                        {!user
+                            ? "Faça login para interagir."
+                            : "Esta é uma Árvore Pública. Apenas quem a registrou pode adicionar novas fotos no diário."}
+                    </p>
                 </div>
             )}
 
-            {/* LINHA DO TEMPO */}
             <div className={styles.timeline}>
                 {entries.length === 0 && <p style={{ color: '#888' }}>Nenhum registro ainda.</p>}
 
-                {entries.map((entry) => (
-                    <div key={entry.id} className={styles.timelineItem}>
+                {entries.map((entry) => {
+                    const canDeleteEntry = isOwnerOrAdmin || (user && user.id === entry.usuario_id);
 
-                        <div className={styles.itemHeader}>
-                            <div className={styles.timelineDate}>
-                                {new Date(entry.date).toLocaleDateString('pt-BR')}
+                    return (
+                        <div key={entry.id} className={styles.timelineItem}>
+                            <div className={styles.itemHeader}>
+                                <div>
+                                    <div className={styles.timelineDate}>
+                                        {new Date(entry.date).toLocaleDateString('pt-BR')}
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                        <FaUserEdit /> {entry.nome_autor}
+                                    </div>
+                                </div>
+
+                                {canDeleteEntry && (
+                                    <button
+                                        onClick={() => handleDelete(entry.id, entry.usuario_id)}
+                                        className={styles.deleteBtn}
+                                        title="Excluir registro"
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                )}
                             </div>
-
-                            {/* 2. SÓ MOSTRA O BOTÃO DE EXCLUIR SE TIVER PERMISSÃO */}
-                            {canEdit && (
-                                <button
-                                    onClick={() => handleDelete(entry.id)}
-                                    className={styles.deleteBtn}
-                                    title="Excluir registro"
-                                >
-                                    <FaTrash />
-                                </button>
-                            )}
+                            <div className={styles.timelinePoint}></div>
+                            <div className={styles.timelineContent}>
+                                <img src={entry.photoUrl} alt="Registro" />
+                                <p>{entry.note}</p>
+                            </div>
                         </div>
-
-                        <div className={styles.timelinePoint}></div>
-
-                        <div className={styles.timelineContent}>
-                            <img src={entry.photoUrl} alt="Registro" />
-                            <p>{entry.note}</p>
-                        </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

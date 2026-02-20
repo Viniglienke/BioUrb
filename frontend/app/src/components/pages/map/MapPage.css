@@ -16,10 +16,10 @@
 /* Header Flutuante */
 .map-header {
     position: absolute;
-    top: 20px;
+    top: 90px;
     left: 20px;
     right: 20px;
-    z-index: 1000;
+    z-index: 9999;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -153,10 +153,10 @@
 /* Botão de GPS */
 .locate-btn {
     position: absolute;
-    top: 20px;
+    top: 150px;
     right: 20px;
     bottom: auto;
-    z-index: 500;
+    z-index: 9990;
     width: 44px;
     height: 44px;
     background: var(--bg-card);
@@ -422,5 +422,115 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* =========================================
+   DARK MODE PARA O MAPA
+   ========================================= */
+/* Inverte as cores do mapa, gira a matiz (para a água continuar azul/esverdeada) e ajusta brilho/contraste */
+:root[data-theme="dark"] .leaflet-layer,
+:root[data-theme="dark"] .leaflet-control-zoom-in,
+:root[data-theme="dark"] .leaflet-control-zoom-out,
+:root[data-theme="dark"] .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    transition: filter 0.3s ease;
+}
+
+/* =========================================
+   MENU DE FILTROS FLUTUANTE
+   ========================================= */
+.map-filters-wrapper {
+    position: absolute;
+    top: 90px;
+    right: 20px;
+    /* Coloca no canto superior direito */
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.filter-toggle-btn {
+    background: var(--bg-card);
+    color: var(--text-main);
+    border: 1px solid var(--input-border);
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.2s;
+}
+
+.filter-toggle-btn:hover,
+.filter-toggle-btn.active {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.filter-dropdown {
+    background: var(--bg-card);
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: var(--shadow-strong);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 220px;
+    animation: slideDown 0.2s ease-out;
+}
+
+.filter-group-map {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group-map label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.filter-group-map select {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.filter-group-map select:focus {
+    border-color: var(--primary);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ajuste Mobile para os Filtros */
+@media (max-width: 768px) {
+    .map-filters-wrapper {
+        top: 80px;
+        /* Desce um pouco para não bater no botão Voltar se a tela for muito pequena */
+        right: 15px;
     }
 }
